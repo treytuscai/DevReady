@@ -12,6 +12,15 @@
     <!-- Ace Editor -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"></script>
 </head>
+<style>
+    .tag {
+        background-color: #e9ecef;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        margin-right: 0.5rem;
+        font-size: 0.875rem;
+    }
+</style>
 
 <body>
 
@@ -54,16 +63,16 @@
                         {% if question %}
                         <h5 id="question-title" data-question-id="{{ question.questionID }}">{{question.questionID}}. {{
                             question.title }}</h5>
-                        <small class="text-muted">
-                            Difficulty: <span id="question-difficulty" class="fw-bold">{{ question.difficulty }}</span>
-                            |
-                            Tags:
-                            <span id="question-tags" class="fw-bold">
-                                {% for tag in question.tags %}
-                                {{ tag.name }}{% if not loop.last %}, {% endif %}
-                                {% endfor %}
+                        <div class="question-stats">
+                            <span
+                                class="badge {% if question.difficulty == 'Easy' %}bg-success{% elif question.difficulty == 'Medium' %}bg-warning{% else %}bg-danger{% endif %}">
+                                {{ question.difficulty }}
                             </span>
-                        </small>
+                            <span class="ms-2">
+                                <i class="bi bi-check-circle"></i>
+                                {{ question.success_rate }}% success rate
+                            </span>
+                        </div>
                         {% else %}
                         <h5>Question Unavailable</h5>
                         <small class="text-muted">No suitable problems found.</small>
@@ -71,6 +80,11 @@
                     </div>
                     <div class="card-body">
                         {% if question %}
+                        <div class="mb-3">
+                            {% for tag in question.tags %}
+                            <span class="tag">{{ tag.name }}</span>
+                            {% endfor %}
+                        </div>
                         <p id="question-description" class="card-text">
                             {{ question.description }}
                         </p>
@@ -120,7 +134,7 @@
                 </div>
                 <div class="card">
                     <div class="card-header">
-                        <h5>&gt;_ Test Result</h5>
+                        <h5>&gt;_ Test Results</h5>
                     </div>
                     <div class="card-body">
                         <div id="test-case-buttons" class="d-flex flex-wrap gap-2">
