@@ -68,8 +68,8 @@ function displaySubmissionResults(results) {
 
 // Display a single test case result
 function showTestCase(expected, input, actual, activeButton) {
-    document.getElementById("expected-text").innerHTML = `<strong>${expected}</strong>`;
-    document.getElementById("input-text").innerHTML = `<strong>${input}</strong>`;
+    document.getElementById("expected-text").innerHTML = `<p>${expected}</p>`;
+    document.getElementById("input-text").innerHTML = `<p>${input}</p>`;
 
     let actualOutput = "";
     let isError = false;
@@ -90,7 +90,7 @@ function showTestCase(expected, input, actual, activeButton) {
     if (isError) {
         document.getElementById("actual-output").innerHTML = `<span style="color: red">${actualOutput}</span>`;
     } else {
-        document.getElementById("actual-output").innerHTML = `<strong>${actualOutput}</strong>`;
+        document.getElementById("actual-output").innerHTML = `<p>${actualOutput}</p>`;
     }
 
     document.querySelectorAll("#test-case-buttons button").forEach(btn => {
