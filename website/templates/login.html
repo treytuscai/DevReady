@@ -63,7 +63,7 @@
     <!-- Hero Section -->
     <section class="hero">
         <!-- Lottie Animation -->
-        <lottie-player src="../static/LogoAnimation.json" background="transparent" speed="0.75" loop autoplay 
+        <lottie-player src="../static/LogoAnimation.json" background="transparent" speed="0.75" loop autoplay
             style="position: absolute; top: 0px; left: 0; height: 900px; width: 1600px;">
         </lottie-player>
         <div class="hero-overlay"></div>
@@ -93,13 +93,13 @@
                                     placeholder="Enter your password" required>
                             </div>
                             {% with messages = get_flashed_messages(with_categories=true) %}
-                                {% if messages and request.form.get('username') %}
-                                    <div class="flash-messages">
-                                        {% for category, message in messages %}
-                                            <div class="alert alert-{{ category }}">{{ message }}</div>
-                                        {% endfor %}
-                                    </div>
-                                {% endif %}
+                            {% if messages and request.form.get('username') %}
+                            <div class="flash-messages">
+                                {% for category, message in messages %}
+                                <div class="alert alert-{{ category }}">{{ message }}</div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
                             {% endwith %}
                             <div class="d-grid">
                                 <button type="submit" class="btn btn-dark">Login</button>
