@@ -32,10 +32,7 @@ def get_question_by_id(question_id):
         question = Question.query.get(question_id)
         if not question:
             return jsonify({"error": "Question not found"}), 404
-        examples = [{
-            "input": tc.inputData,
-            "output": tc.expectedOutput
-        } for tc in question.testCases if tc.isSample]
+        sample_tests = [test for test in question.testCases if test.isSample]
 
         total_submissions = Submission.query.filter_by(questionID=question_id).count()
         successful_submissions = Submission.query.filter_by(
@@ -46,7 +43,7 @@ def get_question_by_id(question_id):
 
         return render_template('question.html',
                              question=question,
-                             examples=examples,
+                             sample_tests=sample_tests,
                              success_rate=success_rate,
                              user=current_user)
     except Exception as e:

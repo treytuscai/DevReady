@@ -140,7 +140,7 @@
                         <div id="test-case-buttons" class="d-flex flex-wrap gap-2">
                             {% for sample_test in sample_tests %}
                             <button class="btn btn-outline-dark {% if loop.first %}active{% endif %}"
-                                onclick="showTestCase('{{ sample_test.expectedOutput | escape }}', '{{ sample_test.inputData | escape }}', this)">
+                                onclick="showTestCase('{{ sample_test.expectedOutput | escape }}', '{{ sample_test.inputData | escape }}', null, this)">
                                 Case {{ loop.index }}
                             </button>
                             {% endfor %}
@@ -148,19 +148,19 @@
                         <hr>
                         <h6>Test Case Input:</h6>
                         <div id="test-case-input" class="p-2 bg-light border mb-2">
-                            <strong id="input-text">
+                            <p id="input-text">
                                 {{ sample_tests[0].inputData if sample_tests else 'No test cases available.' }}
-                            </strong>
+                            </p>
                         </div>
                         <h6>Expected Output:</h6>
                         <div id="expected-output" class="p-2 bg-light border mb-2">
-                            <strong id="expected-text">
+                            <p id="expected-text">
                                 {{ sample_tests[0].expectedOutput if sample_tests else 'No test cases available.' }}
-                            </strong>
+                            </p>
                         </div>
                         <h6>Actual Output:</h6>
                         <div id="actual-output" class="p-2 bg-light border">
-                            <p>No output yet.</p>
+                            <p>None</p>
                         </div>
                     </div>
                 </div>
