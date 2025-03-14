@@ -11,7 +11,8 @@ def app():
         'TESTING': True,
         'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
         'SQLALCHEMY_TRACK_MODIFICATIONS': False,
-        'SECRET_KEY': 'test'
+        'SECRET_KEY': 'test',
+        'OPENAI_API_KEY': 'test_key'
     })
 
     with testing_app.app_context():
