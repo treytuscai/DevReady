@@ -127,3 +127,14 @@ def get_all_tags_with_questions():
         tag_questions[tag_name].append(question)
 
     return tag_questions
+
+def get_all_completed_questions(user_id):
+    '''Get all completed question IDs for a user'''
+    completed_question_ids = set(
+        db.session.query(Submission.questionID)
+        .filter(Submission.userID == user_id, Submission.result == "passed")
+        .distinct()
+        .all()
+    )
+    completed_question_ids = {qid[0] for qid in completed_question_ids}
+    return completed_question_ids

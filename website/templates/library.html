@@ -61,18 +61,31 @@
                         <ul class="list-group">
                             {% for question in questions %}
                             <li class="list-group-item d-flex justify-content-between align-items-center">
-                                <a href="/questions/{{ question.questionID }}" class="stretched-link fw-bold text-dark">
-                                    {{ question.title }}
-                                </a>
                                 <div class="d-flex align-items-center">
+                                    <!-- Checkmark for completed questions, empty box otherwise -->
+                                    {% if question.questionID in completed_questions %}
+                                    <span class="me-2 text-success">✅</span>
+                                    {% else %}
+                                    <span class="me-2 text-muted">⬜</span>
+                                    {% endif %}
+                                    <a href="/questions/{{ question.questionID }}" class="fw-bold text-dark">
+                                        {{ question.title }}
+                                    </a>
+                                </div>
+                                <div class="d-flex align-items-center">
+                                    <!-- Question Tags -->
                                     {% if question.tags %}
                                     <span class="text-muted small me-2">
                                         {% for tag in question.tags %}
-                                            {{ tag.name }}{% if not loop.last %}, {% endif %}
+                                        {{ tag.name }}{% if not loop.last %}, {% endif %}
                                         {% endfor %}
                                     </span>
                                     {% endif %}
-                                    <span class="badge {% if question.difficulty == 'Easy' %}bg-success{% elif question.difficulty == 'Medium' %}bg-warning{% else %}bg-danger{% endif %}">{{ question.difficulty }}</span>
+                                    <!-- Question Difficulty -->
+                                    <span
+                                        class="badge {% if question.difficulty == 'Easy' %}bg-success{% elif question.difficulty == 'Medium' %}bg-warning{% else %}bg-danger{% endif %}">
+                                        {{ question.difficulty }}
+                                    </span>
                                 </div>
                             </li>
                             {% endfor %}

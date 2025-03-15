@@ -2,7 +2,7 @@
 import pytest
 from website.models import User, Question, Tag, MasteryScore, QuestionTag
 from website.extensions import db
-from website.views import get_next_question, get_all_tags_with_questions
+from website.views import get_next_question, get_all_tags_with_questions, get_all_completed_questions
 
 def test_get_next_question_with_weak_skill(app):
     """Test that the function selects an unattempted question based on weakest skill."""
@@ -75,3 +75,14 @@ def test_get_all_tags_with_questions(app):
         assert any(q.title == "Sum Array" for q in tag_questions["arrays"])
         assert any(q.title == "Reverse String" for q in tag_questions["arrays"])
         assert tag_questions["strings"][0].title == "Reverse String"
+
+@pytest.mark.usefixtures("sample_data")
+def test_get_all_completed_questions(app):
+    """Test if get_all_completed_questions correctly fetches completed questions."""
+    with app.app_context():
+        completed_questions = get_all_completed_questions(1)
+
+        # Expecting only q1 to be completed
+        assert isinstance(completed_questions, set)
+        assert len(completed_questions) == 1  # Only 1 completed question
+        assert list(completed_questions)[0] > 0
