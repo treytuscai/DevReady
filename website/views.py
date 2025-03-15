@@ -1,7 +1,7 @@
 """This module contains endpoints for DevReady"""
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
-from .questions import get_next_question, get_all_tags_with_questions
+from .questions import get_next_question, get_all_tags_with_questions, get_all_completed_questions
 
 # Create a blueprint
 main_blueprint = Blueprint('main', __name__)
@@ -18,7 +18,9 @@ def main():
 def library():
     """Endpoint to get problem library page."""
     tag_questions = get_all_tags_with_questions()
-    return render_template('library.html', user=current_user, tag_questions=tag_questions)
+    completed_questions = get_all_completed_questions(current_user.userID)
+    return render_template('library.html', user=current_user, tag_questions=tag_questions,
+                            completed_questions=completed_questions)
 
 @main_blueprint.route('/profile', methods=['GET', 'POST'])
 @login_required

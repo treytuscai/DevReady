@@ -1,8 +1,9 @@
 """Configuration for pytest fixtures."""
 import pytest
+from datetime import datetime
 from werkzeug.security import generate_password_hash
 from website import create_app, db
-from website.models import User, Tag, Question, QuestionTag, TestCase, MasteryScore
+from website.models import User, Tag, Question, QuestionTag, TestCase, MasteryScore, Submission
 
 @pytest.fixture
 def app():
@@ -68,6 +69,7 @@ def sample_data(client, app):
         qt2 = QuestionTag(questionID=q2.questionID, tagID=tag1.tagID)
         qt3 = QuestionTag(questionID=q2.questionID, tagID=tag2.tagID)
         db.session.add_all([qt1, qt2, qt3])
+        db.session.commit()
 
         tc1 = TestCase(questionID=q1.questionID,
                        inputData="[1, 2, 3]",
@@ -78,7 +80,18 @@ def sample_data(client, app):
                        expectedOutput=15,
                        isSample=False)
         db.session.add_all([tc1, tc2])
+        db.session.commit()
 
+        submission1 = Submission(
+            userID=test_user.userID,
+            questionID=q1.questionID,
+            code="def sumArray(arr): return sum(arr)",
+            result="passed",
+            runtime=12,
+            language="python3",
+            time=datetime.utcnow()
+        )
+        db.session.add(submission1)
         db.session.commit()
 
         yield
