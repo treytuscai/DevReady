@@ -4,10 +4,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>About - DevReady</title>
+    <title>DevReady - About</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="../static/FaviconLogo.svg">
+    <!-- Lottie JS -->
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        .hero {
+            position: relative;
+            overflow: hidden;
+            padding: 100px 0;
+            color: white;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+    </style>
 </head>
 
 <body>
@@ -28,51 +53,95 @@
                     <li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
                     <li class="nav-item"><a class="nav-link active" href="/about">About</a></li>
                 </ul>
-                <span class="navbar-text">
-                    Hello, <strong>Guest</strong>
-                </span>
+                <span class="navbar-text">Hello, <strong>Guest</strong></span>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="py-5 bg-light">
-        <div class="container text-center">
-            <h1 class="display-4">About DevReady</h1>
-            <p class="lead">Learn more about our mission, vision, and how we're empowering junior developers to succeed.
-            </p>
+    <section class="hero text-white py-5">
+        <!-- Lottie Animation -->
+        <lottie-player src="../static/LogoAnimation.json" background="transparent" speed="0.75" loop autoplay
+            style="position: absolute; top: 0px; left: 0; height: 900px; width: 1600px;">
+        </lottie-player>
+        <div class="hero-overlay"></div>
+        <div class="container text-center hero-content">
+            <h1 class="display-4 fw-bold">Welcome to DevReady</h1>
+            <p class="lead">Empowering Junior Developers with Real-World Coding Challenges &amp; AI-Powered Guidance</p>
+            <a href="/register" class="btn btn-lg btn-light">Get Started</a>
         </div>
     </section>
 
-    <!-- Main Content -->
-    <div class="container mt-4">
-        <h2>Our Mission</h2>
-        <p>DevReady is an AI-powered coding interview preparation platform created by CS students, for CS students. Our
-            mission is to bridge the gap between theoretical interview problems and real-world coding challenges by
-            providing personalized, interactive coding exercises, real-time AI feedback, and simulated mock interviews.
-        </p>
+    <!-- Our Mission Section -->
+    <section class="py-5">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <h2 class="text-center mb-4">Our Mission</h2>
+                    <p class="lead text-center">DevReady bridges the gap between theory and real-world coding
+                        challenges. Our personalized challenges and AI feedback prepare you for technical interviews and
+                        help you excel in your career.</p>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <h2>What We Offer</h2>
-        <ul>
-            <li><strong>Personalized Challenges:</strong> Tailored coding problems that adapt to your progress and
-                target your areas for improvement.</li>
-            <li><strong>Interactive Code Interpreter:</strong> Write, run, and test your code with instant feedback from
-                our integrated interpreter.</li>
-            <li><strong>AI-Powered Assistance:</strong> Leverage our GPT-4o Mini AI Helper for guidance based on your
-                current code and problem context.</li>
-            <li><strong>Comprehensive Problem Library:</strong> Access a diverse set of coding challenges organized by
-                topics, difficulty, and concept.</li>
-        </ul>
+    <!-- Features Section -->
+    <section class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">What We Offer</h2>
+            <div class="row g-4">
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">Personalized Challenges</h4>
+                            <p class="card-text">Tailored problems that adapt to your progress.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">Interactive Interpreter</h4>
+                            <p class="card-text">Write, run, and test your code instantly.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">AI-Powered Assistance</h4>
+                            <p class="card-text">Get real-time guidance from our AI helper.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body text-center">
+                            <h4 class="card-title">Comprehensive Library</h4>
+                            <p class="card-text">Access a vast collection of coding challenges.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-        <h2>Our Vision</h2>
-        <p>We believe that every junior developer deserves the opportunity to excel. By focusing on practical,
-            step-by-step problem solving and realistic coding challenges, DevReady aims to empower you to tackle even
-            the most complex interview questions and kickstart a successful tech career.</p>
-    </div>
+    <!-- Call to Action Section -->
+    <section class="py-5">
+        <div class="container text-center">
+            <h2 class="mb-4">Ready to Level Up?</h2>
+            <p class="lead mb-4">Join DevReady today and take your coding skills to the next level with our interactive
+                challenges and AI-driven support.</p>
+            <a href="/register" class="btn btn-dark btn-lg">Sign Up Now</a>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="bg-light text-center text-muted py-3 mt-4 border-top">
-        <small>© 2025 DevReady. All Rights Reserved.</small>
+    <footer class="bg-dark text-white py-3">
+        <div class="container text-center">
+            <small>© 2025 DevReady. All Rights Reserved.</small>
+        </div>
     </footer>
 
     <!-- Bootstrap Bundle JS -->

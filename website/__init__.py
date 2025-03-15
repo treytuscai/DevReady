@@ -31,7 +31,7 @@ def create_app(test_config=None):
     db.init_app(app)
 
     login_manager = LoginManager(app)
-    login_manager.login_view = 'auth.login'
+    login_manager.login_view = 'auth.about'
 
     @login_manager.user_loader
     def load_user(user_id):
