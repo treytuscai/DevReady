@@ -2,6 +2,7 @@
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 from .questions import get_next_question, get_all_tags_with_questions
+from .profile import get_solved_count, get_submissions, get_mastery_score, get_badges
 
 # Create a blueprint
 main_blueprint = Blueprint('main', __name__)
@@ -24,7 +25,13 @@ def library():
 @login_required
 def profile():
     """Endpoint to get profile page."""
-    return render_template('profile.html', user=current_user)
+    user_id = current_user.get_id()
+    solved_count = get_solved_count(user_id)
+    submissions = get_submissions(user_id)
+    print("THis is submissions: ", submissions)
+    mastery_score = get_mastery_score(user_id)
+    badges = get_badges(user_id)
+    return render_template('profile.html', user=current_user, solved_count=solved_count, submissions = submissions, mastery_score = mastery_score, badges = badges)
 
 @main_blueprint.route('/settings', methods=['GET', 'POST'])
 @login_required
