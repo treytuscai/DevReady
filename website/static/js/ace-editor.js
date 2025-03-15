@@ -1,6 +1,6 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Initialize Ace Editor
+window.onload = function() {
     const editor = ace.edit("editor");
+    editor.getSession().setMode("ace/mode/python");
     editor.setTheme("ace/theme/xcode");
     const template = document.getElementById("editor").dataset.template;
     if (template) editor.setValue(template, -1);
@@ -11,4 +11,4 @@ document.addEventListener("DOMContentLoaded", () => {
         minLines: 15,
         maxLines: 15,
     });
-});
+};
