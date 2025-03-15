@@ -58,7 +58,7 @@ def test_submit_solution_success(client, app):
         assert all(result["passed"] for result in data["results"])
         assert data["results"][1]["input"] == "Hidden"
         assert data["results"][1]["expected"] == "Hidden"
-        assert data["results"][1]["actual"] == "Hidden"
+        assert data["results"][1]["output"] == 15
 
 @pytest.mark.usefixtures("sample_data")
 def test_code_execution_timeout(client, app):
@@ -111,7 +111,7 @@ def test_submit_solution_save_error(client, app, monkeypatch):
         def {q1.expected_method}(self, args):
             return sum(args)
         """
-        monkeypatch.setattr("website.extensions.db.session.commit", 
+        monkeypatch.setattr("website.extensions.db.session.commit",
                             lambda: (_ for _ in ()).throw(Exception("Commit error")))
         response = client.post(f"/submit/{q1.questionID}", json={"code": code})
         data = response.get_json()
