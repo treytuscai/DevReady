@@ -126,7 +126,7 @@ def test_about_page(client):
     """Test accessing about page."""
     response = client.get("/about")
     assert response.status_code == 200
-    assert b"Our Vision" in response.data
+    assert b"Welcome" in response.data
     assert b"DevReady" in response.data
 
 @pytest.mark.usefixtures("test_user")
