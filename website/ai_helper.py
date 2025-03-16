@@ -24,9 +24,6 @@ def generate_response(system_prompt, user_prompt):
             stream=False
         )
         return response.choices[0].message.content, None
-    except (KeyError, ValueError) as error:
-        current_app.logger.error("AI Model Error: %s", str(error))
-        return None, str(error)
     except Exception as error:  # noqa: W0718 (Still catching general exceptions)
         current_app.logger.error("Unexpected AI Model Error: %s", str(error))
         return None, "An unexpected error occurred."
