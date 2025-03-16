@@ -11,7 +11,8 @@ main_blueprint = Blueprint('main', __name__)
 def main():
     """Selects a question based on user's weakest skill level."""
     question, sample_tests = get_next_question(current_user.userID)
-    return render_template('index.html', user=current_user, question=question, sample_tests=sample_tests)
+    return render_template('index.html', user=current_user, question=question,
+                            sample_tests=sample_tests)
 
 @main_blueprint.route('/library', methods=['GET', 'POST'])
 @login_required
