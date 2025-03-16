@@ -11,32 +11,17 @@ from website.extensions import db
 
 code_exec_blueprint = Blueprint("code_exec", __name__)
 
-def execute_code(command, timeout=5):
-    """Executes a command in a subprocess and returns its output and return code."""
-    try:
-        result = subprocess.run(
-            command,
-            capture_output=True,
-            text=True,
-            timeout=timeout,
-            check=False
-        )
-        return (result.stdout if result.returncode == 0 else result.stderr, result.returncode)
-    except subprocess.TimeoutExpired:
-        return ("Execution timed out", 1)
-    except Exception as e:
-        return (str(e), 1)
-
 def execute_code_with_test(code, test_input, expected_method):
-    """Runs code on a given test input and returns the result."""
+    """Runs code on a given test input and returns stdout, stderr, and the function result."""
     temp_dir = tempfile.mkdtemp()
     try:
         imports = (
-            "from typing import List, Dict, Tuple\n"
+            "from typing import List, Dict, Tuple, Set, Deque\n"
             "import math\n"
             "import heapq\n"
             "import bisect\n"
             "import collections\n"
+            "from collections import deque, Counter, defaultdict, OrderedDict, namedtuple\n"
             "import itertools\n"
             "import string\n"
             "import re\n"
@@ -50,12 +35,44 @@ def execute_code_with_test(code, test_input, expected_method):
 
         runner = (
             "\nif __name__ == '__main__':\n"
-            "    import sys, json\n"
+            "    import sys, json, io\n"
+            "    from contextlib import redirect_stdout, redirect_stderr\n"
             "    data = sys.stdin.read().strip()\n"
             "    args = json.loads(data)\n"
             "    sol = Solution()\n"
-            f"    result = sol.{expected_method}(args)\n"
-            "    print(json.dumps(result))\n"  # Print as JSON
+            "    f_stdout = io.StringIO()\n"
+            "    f_stderr = io.StringIO()\n"
+            "    with redirect_stdout(f_stdout), redirect_stderr(f_stderr):\n"
+            f"        try:\n"
+            f"            output = sol.{expected_method}(args)\n"
+            f"        except Exception as e:\n"
+            f"            type = str(type(e).__name__)\n"
+            f"            print(type + ': ' + str(e), file=sys.stderr)\n"
+            f"            output = None\n"
+            "    printed_output = f_stdout.getvalue().strip()\n"
+            "    error_output = f_stderr.getvalue().strip()\n"
+            "    output_data = {\n"
+            "        'stdout': printed_output.split('\\n') if printed_output else None,\n"
+            "        'stderr': error_output.split('\\n') if error_output else None,\n"
+            "        'output': output\n"
+            "    }\n"
+            "    # Ensure all values in output_data are serializable\n"
+            "    def convert_to_serializable(obj):\n"
+            "        if isinstance(obj, set):\n"
+            "            return list(obj)  # Convert sets to lists\n"
+            "        elif isinstance(obj, deque):\n"
+            "            return list(obj)  # Convert deque to list\n"
+            "        elif isinstance(obj, frozenset):\n"
+            "            return list(obj)  # Convert frozenset to list (or set if you prefer)\n"
+            "        elif isinstance(obj, dict):\n"
+            "            return {key: convert_to_serializable(value) for key, value in obj.items()}\n"
+            "        elif isinstance(obj, list):\n"
+            "            return [convert_to_serializable(item) for item in obj]\n"
+            "        else:\n"
+            "            return obj\n"
+            "    # Apply the serialization function to output_data\n"
+            "    output_data = convert_to_serializable(output_data)\n"
+            "    print(json.dumps(output_data))\n"
         )
 
         full_code = imports + code + runner
@@ -71,18 +88,22 @@ def execute_code_with_test(code, test_input, expected_method):
             text=True,
             timeout=5
         )
-        if process.returncode != 0:
-            # Extract just the last line from stderr (usually the error message)
-            err_lines = process.stderr.strip().splitlines()
-            error_message = err_lines[-1] if err_lines else "Unknown error occurred."
-            return {"error": error_message}
 
-        # Parse and return the output as a proper type
-        return json.loads(process.stdout.strip())
+        # Capture stdout and stderr from the subprocess
+        if process.returncode != 0:
+            error_message = process.stderr.strip()
+            error_message = error_message.split(":", 1)[-1].strip()
+            output_data = {
+                'stdout': None,
+                'stderr': error_message.split('\n'),
+                'output': None
+            }
+        else:
+            output_data = json.loads(process.stdout.strip())
+        return output_data
 
     finally:
         shutil.rmtree(temp_dir)
-
 
 def run_tests(code, test_cases, expected_method):
     """Runs the given user code against question's test cases."""
@@ -90,22 +111,24 @@ def run_tests(code, test_cases, expected_method):
     all_passed = True
 
     for test in test_cases:
-        actual_output = execute_code_with_test(code, test.inputData, expected_method)
+        execution_result = execute_code_with_test(code, test.inputData, expected_method)
+        output = execution_result["output"]  # Extract function output
         expected = json.loads(test.expectedOutput)
-        passed = actual_output == expected
+        passed = output == expected
 
         results.append({
             "passed": passed,
             "input": test.inputData if test.isSample else "Hidden",
             "expected": test.expectedOutput if test.isSample else "Hidden",
-            "actual": actual_output if test.isSample else "Hidden"
+            "output": output,
+            "stdout": execution_result.get("stdout", []),
+            "stderr": execution_result.get("stderr", [])
         })
 
         if not passed:
             all_passed = False
 
     return results, all_passed
-
 
 @code_exec_blueprint.route("/run/<int:question_id>", methods=["POST"])
 @login_required
