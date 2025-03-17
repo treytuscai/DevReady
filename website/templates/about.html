@@ -14,24 +14,44 @@
     <style>
         .hero {
             position: relative;
-            overflow: hidden;
-            padding: 100px 0;
+            height: 400px;
             color: white;
-        }
+            overflow: hidden;
+            }
 
-        .hero-overlay {
+            .hero-overlay {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-        }
+            }
 
-        .hero-content {
+            .animation-container {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            }
+
+            .animation-container lottie-player {
+            width: 100%;
+            height: 100%;
+            }
+
+            .hero-content {
             position: relative;
             z-index: 2;
-        }
+            background: transparent;
+            text-align: center;
+            }
+
     </style>
 </head>
 
@@ -59,30 +79,24 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero text-white py-5">
-        <!-- Lottie Animation -->
-        <lottie-player src="../static/LogoAnimation.json" background="transparent" speed="0.75" loop autoplay
-            style="position: absolute; top: 0px; left: 0; height: 900px; width: 1600px;">
-        </lottie-player>
+    <section class="hero text-white py-5 position-relative">
         <div class="hero-overlay"></div>
+
+        <!-- Lottie Animation Container -->
+        <div class="animation-container">
+            <lottie-player 
+                src="../static/LogoAnimation.json" 
+                background="transparent" 
+                speed="0.75" 
+                loop 
+                autoplay>
+            </lottie-player>
+        </div>
+
         <div class="container text-center hero-content">
             <h1 class="display-4 fw-bold">Welcome to DevReady</h1>
             <p class="lead">Empowering Junior Developers with Real-World Coding Challenges &amp; AI-Powered Guidance</p>
             <a href="/register" class="btn btn-lg btn-light">Get Started</a>
-        </div>
-    </section>
-
-    <!-- Our Mission Section -->
-    <section class="py-5">
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-lg-8">
-                    <h2 class="text-center mb-4">Our Mission</h2>
-                    <p class="lead text-center">DevReady bridges the gap between theory and real-world coding
-                        challenges. Our personalized challenges and AI feedback prepare you for technical interviews and
-                        help you excel in your career.</p>
-                </div>
-            </div>
         </div>
     </section>
 
