@@ -81,25 +81,34 @@ def execute_code_with_test(code, test_input, expected_method):
         with open(code_file, "w", encoding="utf-8") as f:
             f.write(full_code)
 
-        process = subprocess.run(
-            ["python3", code_file],
-            input=test_input,
-            capture_output=True,
-            text=True,
-            timeout=5
-        )
+        try:
+            process = subprocess.run(
+                ["python3", code_file],
+                input=test_input,
+                capture_output=True,
+                text=True,
+                timeout=3
+            )
 
-        # Capture stdout and stderr from the subprocess
-        if process.returncode != 0:
-            error_message = process.stderr.strip()
-            error_message = error_message.split(":", 1)[-1].strip()
+            # Capture stdout and stderr from the subprocess
+            if process.returncode != 0:
+                error_message = process.stderr.strip()
+                error_message = error_message.split(":", 1)[-1].strip()
+                output_data = {
+                    'stdout': None,
+                    'stderr': error_message.split('\n'),
+                    'output': None
+                }
+            else:
+                output_data = json.loads(process.stdout.strip())
+        # Time Limit Exceeded
+        except subprocess.TimeoutExpired as e:
             output_data = {
                 'stdout': None,
-                'stderr': error_message.split('\n'),
+                'stderr': ["Time Limit Exceeded"],
                 'output': None
             }
-        else:
-            output_data = json.loads(process.stdout.strip())
+
         return output_data
 
     finally:
