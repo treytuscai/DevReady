@@ -74,8 +74,9 @@ def test_code_execution_timeout(client, app):
         """
         response = client.post(f"/run/{q1.questionID}", json={"code": code})
         data = response.get_json()
-        assert response.status_code == 500
-        assert "Error running sample tests" in data["error"]
+        print(data)
+        assert response.status_code == 200
+        assert "Time Limit Exceeded" in data["results"][0]["stderr"]
 
 @pytest.mark.usefixtures("sample_data")
 def test_missing_code(client, app):
