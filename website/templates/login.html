@@ -14,10 +14,10 @@
     <style>
         .hero {
             position: relative;
-            overflow: hidden;
-            padding: 100px 0;
+            height: 400px;
             color: white;
-        }
+            overflow: hidden;
+            }
 
         .hero-overlay {
             position: absolute;
@@ -26,12 +26,31 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-        }
+            }
+
+        .animation-container {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            }
+
+        .animation-container lottie-player {
+            width: 100%;
+            height: 100%;
+            }
 
         .hero-content {
             position: relative;
             z-index: 2;
-        }
+            background: transparent;
+            text-align: center;
+            }
     </style>
 </head>
 
@@ -62,11 +81,17 @@
 
     <!-- Hero Section -->
     <section class="hero text-white py-5">
-        <!-- Lottie Animation -->
-        <lottie-player src="../static/LogoAnimation.json" background="transparent" speed="0.75" loop autoplay
-            style="position: absolute; top: 0px; left: 0; height: 900px; width: 1600px;">
-        </lottie-player>
         <div class="hero-overlay"></div>
+        <!-- Lottie Animation -->
+        <div class="animation-container">
+            <lottie-player 
+                src="../static/LogoAnimation.json" 
+                background="transparent" 
+                speed="0.75" 
+                loop 
+                autoplay>
+            </lottie-player>
+        </div>
         <div class="container text-center hero-content">
             <h1 class="display-4 fw-bold">Accelerate Your Coding Journey</h1>
             <p class="lead">Unlock your potential with interactive challenges, personalized feedback, and real-world preparation.</p>

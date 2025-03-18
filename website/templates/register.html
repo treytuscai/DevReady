@@ -12,12 +12,12 @@
     <!-- Lottie JS -->
     <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
     <style>
-        .hero {
+       .hero {
             position: relative;
-            overflow: hidden;
-            padding: 100px 0;
+            height: 400px;
             color: white;
-        }
+            overflow: hidden;
+            }
 
         .hero-overlay {
             position: absolute;
@@ -26,12 +26,31 @@
             right: 0;
             bottom: 0;
             background: rgba(0, 0, 0, 0.5);
-        }
+            }
+
+        .animation-container {
+            position: absolute;
+            top: 0; 
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            }
+
+        .animation-container lottie-player {
+            width: 100%;
+            height: 100%;
+            }
 
         .hero-content {
             position: relative;
             z-index: 2;
-        }
+            background: transparent;
+            text-align: center;
+            }
     </style>
 </head>
 
@@ -53,29 +72,35 @@
                     <li class="nav-item"><a class="nav-link active" href="/register">Register</a></li>
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                 </ul>
-                <span class="navbar-text">
-                    Hello, <strong>Guest</strong>
-                </span>
+                <span class="navbar-text">Hello, <strong>Guest</strong></span>
             </div>
         </div>
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero text-white py-5">
-        <!-- Lottie Animation -->
-        <lottie-player src="../static/LogoAnimation.json" background="transparent" speed="0.75" loop autoplay
-            style="position: absolute; top: 0px; left: 0; height: 900px; width: 1600px;">
-        </lottie-player>
+    <section class="hero text-white py-5 position-relative">
         <div class="hero-overlay"></div>
+
+        <!-- Lottie Animation -->
+        <div class="animation-container">
+            <lottie-player 
+                src="../static/LogoAnimation.json" 
+                background="transparent" 
+                speed="0.75" 
+                loop 
+                autoplay>
+            </lottie-player>
+        </div>
+
         <div class="container text-center hero-content">
-            <h1 class="display-4 fw-bold">Ready to Code? Let’s Get Started!</h1>
+            <h1 class="display-4 fw-bold">Ready to Code? Let's Get Started!</h1>
             <p class="lead">Create an account, level up your coding skills, and land your dream job.</p>
             <a href="/about" class="btn btn-lg btn-light">Learn More</a>
         </div>
     </section>
 
     <!-- Registration Form -->
-    <div class="container mt-5">
+    <div class="container mt-3">
         <div class="row justify-content-center">
             <div class="col-md-6">
                 <div class="card shadow">
