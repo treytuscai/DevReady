@@ -7,40 +7,20 @@
     <title>DevReady - Register</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Favicon -->
-    <link rel="icon" type="image/svg+xml" href="../static/FaviconLogo.svg">
-    <!-- Lottie JS -->
-    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
-    <style>
-        .hero {
-            position: relative;
-            overflow: hidden;
-            padding: 100px 0;
-            color: white;
-        }
-
-        .hero-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-    </style>
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='FaviconLogo.svg') }}">
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
-                <img src="../static/DevReadyLogo.svg" alt="DevReady Logo" width="40" height="40" class="me-2">
+                <img src="{{ url_for('static', filename='DevReadyLogo.svg') }}" alt="DevReady Logo" width="40" height="40" class="me-2">
                 <span>DevReady</span>
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTabs"
@@ -48,13 +28,13 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarTabs">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <ul class="navbar-nav mx-auto">
                     <li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
                     <li class="nav-item"><a class="nav-link active" href="/register">Register</a></li>
                     <li class="nav-item"><a class="nav-link" href="/about">About</a></li>
                 </ul>
                 <span class="navbar-text">
-                    Hello, <strong>Guest</strong>
+                    <i class="fa-solid fa-user-circle"></i> Hello, <strong>Guest</strong>
                 </span>
             </div>
         </div>
@@ -62,25 +42,19 @@
 
     <!-- Hero Section -->
     <section class="hero text-white py-5">
-        <!-- Lottie Animation -->
-        <lottie-player src="../static/LogoAnimation.json" background="transparent" speed="0.75" loop autoplay
-            style="position: absolute; top: 0px; left: 0; height: 900px; width: 1600px;">
-        </lottie-player>
-        <div class="hero-overlay"></div>
         <div class="container text-center hero-content">
-            <h1 class="display-4 fw-bold">Ready to Code? Let’s Get Started!</h1>
-            <p class="lead">Create an account, level up your coding skills, and land your dream job.</p>
-            <a href="/about" class="btn btn-lg btn-light">Learn More</a>
+            <h1 class="hero-title display-4 fw-bold">Join <span class="devready-highlight">DevReady</span></h1>
+            <p class="lead">Sign up now to access AI-powered coding challenges and level up your skills.</p>
         </div>
     </section>
 
-    <!-- Registration Form -->
-    <div class="container mt-5">
-        <div class="row justify-content-center">
-            <div class="col-md-6">
-                <div class="card shadow">
-                    <div class="card-body">
-                        <h3 class="card-title text-center mb-4">Register</h3>
+    <!-- Registration Form Section -->
+    <section class="py-5" style="background-color: #1E1E1E;">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-6">
+                    <div class="card shadow p-4">
+                        <h3 class="text-center mb-4">Register</h3>
                         <form method="POST" action="/register">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
@@ -112,20 +86,30 @@
                             {% endif %}
                             {% endwith %}
                             <div class="d-grid">
-                                <button type="submit" class="btn btn-dark">Register</button>
+                                <button type="submit" class="btn btn-custom">Register</button>
                             </div>
                         </form>
                         <div class="mt-3 text-center">
-                            <p>Already have an account? <a class="text-dark" href="/login">Login here</a></p>
+                            <p>Already have an account? <a class="text-orange" href="/login">Login here</a></p>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    <!-- Call to Action Section -->
+    <section class="py-5" style="background-color: #1E1E1E;">
+        <div class="container text-center">
+            <h2 class="mb-4">Ready to Level Up?</h2>
+            <p class="lead mb-4">Join DevReady today and take your coding skills to the next level with our interactive
+                challenges and AI-driven support.</p>
+            <a href="/register" class="btn btn-custom">Sign Up Now</a>
+        </div>
+    </section>
 
     <!-- Footer -->
-    <footer class="bg-dark text-white py-3 mt-5">
+    <footer class="bg-dark text-white py-3">
         <div class="container text-center">
             <small>© 2025 DevReady. All Rights Reserved.</small>
         </div>
