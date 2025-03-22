@@ -25,4 +25,4 @@ jobs:
         pylint --fail-under=8 $(git ls-files '*.py')
     - name: Testing the code with pytest
       run: |
-        python -m pytest -v
+        python -m pytest --cov=website --cov-branch --cov-report=term-missing -v
