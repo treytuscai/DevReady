@@ -7,6 +7,7 @@ async function executeCode(endpoint, isSubmission = false) {
     // Editor and code
     const editor = ace.edit("editor");
     const code = editor.getValue();
+    const language = document.getElementById("language-select").value.toLowerCase();
 
     // Output block
     const outputContainer = document.getElementById('output-container');
@@ -21,7 +22,7 @@ async function executeCode(endpoint, isSubmission = false) {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             credentials: "include",
-            body: JSON.stringify({ code }),
+            body: JSON.stringify({ code, language }),
         });
         const result = await res.json();
         isSubmission ? displaySubmissionResults(result.results) : displayRunResults(result.results);

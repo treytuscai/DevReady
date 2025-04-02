@@ -12,8 +12,199 @@ CODE_EXECUTOR_URL = "https://code-runner-new.livelypebble-17c142a1.eastus.azurec
 
 def execute_code_with_test(code, test_input, expected_method, language):
     """Runs code on a given test input and returns stdout, stderr, and the function result."""
+    print("language: ", language)
     if language == "python":
-        full_code = """
+        full_code = format_python(code, test_input, expected_method)
+    elif language == "javascript":
+        full_code = format_javascript(code, test_input, expected_method)
+    elif language == "typescript":
+        language = "javascript"
+        full_code = execute_typescript_as_javascript(code, test_input, expected_method)
+    elif language == "go":
+        full_code = format_go(code, test_input, expected_method)
+    else:
+        # Future support for other languages would go here
+        return {
+            "output": None,
+            "stdout": None,
+            "stderr": [f"Language '{language}' is not supported yet"]
+        }
+
+    # Call the remote code execution service
+    payload = {
+        "language": language,
+        "code": full_code,
+        "timeout": 5
+    }
+
+    print(f"Sending payload to code executor with language: {payload['language']}")
+    print(f"Code snippet length: {len(payload['code'])} chars")
+    print(f"Full code: {payload['code']}")
+
+    try:
+        response = requests.post(
+            CODE_EXECUTOR_URL,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=10
+        )
+
+        if response.status_code != 200:
+            return {
+                "output": None,
+                "stdout": None,
+                "stderr": [f"Code execution service error: {response.text}"]
+            }
+
+        # Parse the response
+        result = response.json()
+        output_text = result.get("output", "")
+        print(f"Raw output from executor: {output_text[:100]}")
+
+        # Try to extract our formatted result
+        try:
+            # Parse the JSON output from our test runner
+            parsed_data = json.loads(output_text.strip())
+
+            return {
+                "output": parsed_data.get("result"),
+                "stdout": parsed_data.get("stdout", "").split("\n") 
+                if parsed_data.get("stdout") else None,
+                "stderr": parsed_data.get("stderr", "").split("\n") 
+                if parsed_data.get("stderr") else None
+            }
+        except json.JSONDecodeError:
+            # If output is not valid JSON, return as plain output
+            return {
+                "output": None,
+                "stdout": output_text.split("\n") if output_text else None,
+                "stderr": None
+            }
+
+    except requests.RequestException as e:
+        return {
+            "output": None,
+            "stdout": None,
+            "stderr": [f"Request failed: {str(e)}"]
+        }
+    except Exception as e:
+        return {
+            "output": None,
+            "stdout": None,
+            "stderr": [f"Unexpected error: {str(e)}"]
+        }
+
+def run_tests(code, test_cases, expected_method, language):
+    """Runs the given user code against question's test cases."""
+    results = []
+    all_passed = True
+
+    for test in test_cases:
+        print("THis is the test: ", test)
+        execution_result = execute_code_with_test(code, test.inputData, expected_method, language)
+        output = execution_result["output"]  # Extract function output
+        try:
+            # Try to parse expected output as JSON
+            expected = json.loads(test.expectedOutput)
+        except json.JSONDecodeError:
+            # If not valid JSON, use the raw string value
+            expected = test.expectedOutput
+        passed = output == expected
+
+        results.append({
+            "passed": passed,
+            "input": test.inputData if test.isSample else "Hidden",
+            "expected": test.expectedOutput if test.isSample else "Hidden",
+            "output": output,
+            "stdout": execution_result.get("stdout", []),
+            "stderr": execution_result.get("stderr", [])
+        })
+        print("Test Input:", test.inputData)
+        print("Expected Output:", test.expectedOutput)
+        print("Actual Output:", output)
+        print("Test Passed:", passed)
+        print("Full Results:", results)
+
+        if not passed:
+            all_passed = False
+
+    return results, all_passed
+
+@code_exec_blueprint.route("/run/<int:question_id>", methods=["POST"])
+@login_required
+def run_code_samples(question_id):
+    """Runs user's code against sample test cases when called."""
+    data = request.get_json()
+    code = data.get("code")
+    language = data.get("language", "python")
+
+    if language == "js":
+        language = "javascript"
+    elif language == "ts":
+        language = "typescript"
+    else:
+        language = language
+
+    if not code:
+        return jsonify({"error": "No code provided"}), 400
+
+    try:
+        question = Question.query.get_or_404(question_id)
+        sample_tests = [test for test in question.testCases if test.isSample]
+        results, all_passed = run_tests(code, sample_tests, question.expected_method, language)
+
+        return jsonify({
+            "passed": all_passed,
+            "results": results
+        })
+    except Exception as e:
+        return jsonify({"error": f"Error running sample tests: {str(e)}"}), 500
+
+@code_exec_blueprint.route("/submit/<int:question_id>", methods=["POST"])
+@login_required
+def submit_solution(question_id):
+    """Runs submitted code against test cases, returning results."""
+    data = request.get_json()
+    code = data.get("code")
+    language = data.get("language", "python")
+
+    if language == "js":
+        language = "javascript"
+    elif language == "ts":
+        language = "typescript"
+    else:
+        language = language
+
+    if not code:
+        return jsonify({"error": "No code provided"}), 400
+
+    question = Question.query.get_or_404(question_id)
+    results, all_passed = run_tests(code,
+                                    question.testCases,
+                                    question.expected_method,
+                                    language=language)
+
+    try:
+        submission = Submission(
+            userID=current_user.userID,
+            questionID=question_id,
+            code=code,
+            result="Passed" if all_passed else "Failed",
+            language=language
+        )
+        db.session.add(submission)
+        db.session.commit()
+    except Exception as e:
+        return jsonify({"error": f"Failed to save submission: {str(e)}"}), 500
+
+    return jsonify({
+        "passed": all_passed,
+        "results": results
+    })
+
+def format_python(code, test_input, expected_method):
+    """Format Python submission"""
+    return """
 # Common imports for LeetCode problems
 from typing import List, Dict, Tuple, Optional, Set
 import collections
@@ -53,146 +244,183 @@ print(json.dumps({{
     "stderr": stderr_buffer.getvalue()
 }}))
 """
+
+def format_javascript(code, test_input, expected_method):
+    """Format JavaScript submission to handle multiple JS function definition patterns."""
+
+    js_input = json.dumps(test_input)
+    print("js_input: ", js_input)
+    print("Full code: ")
+    
+    formatted_code = f"""
+// User submitted code:
+{code}
+
+// Test runner for JavaScript
+(function() {{
+    const input = JSON.parse({js_input});
+    let result = null;
+    let stdout_capture = "";
+    let stderr_capture = ""; 
+
+    try {{
+        // check if expected_method exists as a global function
+        if (typeof {expected_method} === 'function') {{
+            result = {expected_method}(input);
+        }}
+        else if (typeof Solution === 'function' && typeof (new Solution())['{expected_method}'] === 'function') {{
+            // Create instance and call method
+            const solution = new Solution();
+            result = solution['{expected_method}'](input);
+        }}
+        else if (typeof {expected_method}Solution === 'function') {{
+            result = {expected_method}Solution(input);
+        }}
+        else {{
+            throw new Error(`Runtime Error: Function '{expected_method}' not found. Make sure it's defined as a global function, a method on a Solution class, or matches expected naming patterns.`);
+        }}
+    }} catch (e) {{
+        stderr_capture = e.toString();
+        result = null; // Ensure result is null if an error occurred
+    }}
+    
+    console.log(JSON.stringify({{
+        result: result,
+        stdout: stdout_capture,
+        stderr: stderr_capture
+    }}));
+}})();
+"""
+    return formatted_code
+
+
+
+def execute_typescript_as_javascript(code, test_input, expected_method):
+    """Strips TypeScript type annotations and runs as JavaScript."""
+
+    import re
+
+    # Strip TypeScript type annotations
+    js_code = re.sub(r'\)\s*:\s*[a-zA-Z0-9<>[\],\s|]+\s*{', ') {', code)
+    js_code = re.sub(r'(\w+)\s*:\s*[a-zA-Z0-9<>[\],\s|]+', r'\1', js_code)
+
+    # Use the JS formatter with the type-stripped code
+    return format_javascript(js_code, test_input, expected_method)
+
+def format_go(code, test_input, expected_method):
+    """Format Go submission to handle Go's execution model."""
+
+    # Convert test_input to a Go-compatible string representation
+    import json
+
+    try:
+        input_data = json.loads(test_input)
+    except:
+        input_data = test_input
+
+    # Build a Go-compatible string for the input
+    input_declaration = ""
+    function_call = ""
+
+    if isinstance(input_data, list):
+        # Handle array/slice input
+        if all(isinstance(x, int) for x in input_data):
+            # Integer array
+            input_declaration = f"input := []int{{{', '.join(map(str, input_data))}}}"
+            function_call = f"result := {expected_method}(input)"
+        elif all(isinstance(x, float) for x in input_data):
+            # Float array
+            input_declaration = f"input := []float64{{{', '.join(map(str, input_data))}}}"
+            function_call = f"result := {expected_method}(input)"
+        elif all(isinstance(x, str) for x in input_data):
+            # String array
+            string_elements = []
+            for x in input_data:
+                string_elements.append(f'\"{x}\"')
+            input_declaration = f"input := []string{{{', '.join(string_elements)}}}"
+            function_call = f"result := {expected_method}(input)"
+        elif all(isinstance(x, list) for x in input_data):
+            # 2D array/matrix
+            if all(all(isinstance(y, int) for y in row) for row in input_data):
+                # 2D int array
+                rows = []
+                for row in input_data:
+                    rows.append(f"{{{', '.join(map(str, row))}}}")
+                input_declaration = f"input := [][]int{{{', '.join(rows)}}}"
+                function_call = f"result := {expected_method}(input)"
+            else:
+                # Generic 2D array - handle with interface{}
+                input_declaration = "// Complex input structure, using JSON parsing"
+                json_str = json.dumps(input_data)
+                input_declaration += f"\ninputJSON := `{json_str}`"
+                input_declaration += "\nvar input [][]interface{}"
+                input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
+                function_call = f"result := {expected_method}(input)"
+    elif isinstance(input_data, dict):
+        # Handle map input
+        input_declaration = "// Map input, using JSON parsing"
+        json_str = json.dumps(input_data)
+        input_declaration += f"\ninputJSON := `{json_str}`"
+        input_declaration += "\nvar input map[string]interface{}"
+        input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
+        function_call = f"result := {expected_method}(input)"
+    elif isinstance(input_data, int):
+        # Single integer
+        input_declaration = f"input := {input_data}"
+        function_call = f"result := {expected_method}(input)"
+    elif isinstance(input_data, float):
+        # Single float
+        input_declaration = f"input := {input_data}"
+        function_call = f"result := {expected_method}(input)"
+    elif isinstance(input_data, str):
+        # Single string
+        input_declaration = f"input := \"{input_data}\""
+        function_call = f"result := {expected_method}(input)"
     else:
-        # Future support for other languages would go here
-        return {
-            "output": None,
-            "stdout": None,
-            "stderr": [f"Language '{language}' is not supported yet"]
-        }
+        # Generic fallback
+        input_declaration = "// Complex or unknown input type, using JSON parsing"
+        json_str = json.dumps(input_data) if input_data is not None else "null"
+        input_declaration += f"\ninputJSON := `{json_str}`"
+        input_declaration += "\nvar input interface{}"
+        input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
+        function_call = f"result := {expected_method}(input)"
 
-    # Call the remote code execution service
-    payload = {
-        "language": language,
-        "code": full_code,
-        "timeout": 5
-    }
+    if isinstance(input_data, list) and len(input_data) == 2 and expected_method.lower() in ["twosum"]: #Add more later
+        if isinstance(input_data[0], list) and isinstance(input_data[1], (int, float)):
+            # Format like: twoSum([2,7,11,15], 9)
+            nums = input_data[0]
+            target = input_data[1]
+            if all(isinstance(x, int) for x in nums):
+                input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
+                function_call = f"result := {expected_method}(nums, target)"
 
-    try:
-        response = requests.post(
-            CODE_EXECUTOR_URL,
-            json=payload,
-            headers={"Content-Type": "application/json"},
-            timeout=10
-        )
+    formatted_code = f"""
+package main
 
-        if response.status_code != 200:
-            return {
-                "output": None,
-                "stdout": None,
-                "stderr": [f"Code execution service error: {response.text}"]
-            }
+import (
+    "encoding/json"
+    "fmt"
+)
 
-        # Parse the response
-        result = response.json()
-        output_text = result.get("output", "")
+// User submitted code:
+{code}
 
-        # Try to extract our formatted result
-        try:
-            # Parse the JSON output from our test runner
-            parsed_data = json.loads(output_text.strip())
-
-            return {
-                "output": parsed_data.get("result"),
-                "stdout": parsed_data.get("stdout", "").split("\n") if parsed_data.get("stdout") else None,
-                "stderr": parsed_data.get("stderr", "").split("\n") if parsed_data.get("stderr") else None
-            }
-        except json.JSONDecodeError:
-            # If output is not valid JSON, return as plain output
-            return {
-                "output": None,
-                "stdout": output_text.split("\n") if output_text else None,
-                "stderr": None
-            }
-
-    except requests.RequestException as e:
-        return {
-            "output": None,
-            "stdout": None,
-            "stderr": [f"Request failed: {str(e)}"]
-        }
-    except Exception as e:
-        return {
-            "output": None,
-            "stdout": None,
-            "stderr": [f"Unexpected error: {str(e)}"]
-        }
-
-def run_tests(code, test_cases, expected_method, language):
-    """Runs the given user code against question's test cases."""
-    results = []
-    all_passed = True
-
-    for test in test_cases:
-        execution_result = execute_code_with_test(code, test.inputData, expected_method, language)
-        output = execution_result["output"]  # Extract function output
-        expected = json.loads(test.expectedOutput)
-        passed = output == expected
-
-        results.append({
-            "passed": passed,
-            "input": test.inputData if test.isSample else "Hidden",
-            "expected": test.expectedOutput if test.isSample else "Hidden",
-            "output": output,
-            "stdout": execution_result.get("stdout", []),
-            "stderr": execution_result.get("stderr", [])
-        })
-
-        if not passed:
-            all_passed = False
-
-    return results, all_passed
-
-@code_exec_blueprint.route("/run/<int:question_id>", methods=["POST"])
-@login_required
-def run_code_samples(question_id):
-    """Runs user's code against sample test cases when called."""
-    data = request.get_json()
-    code = data.get("code")
-    language = data.get("language", "python") #Default Py for now
-
-    if not code:
-        return jsonify({"error": "No code provided"}), 400
-
-    try:
-        question = Question.query.get_or_404(question_id)
-        sample_tests = [test for test in question.testCases if test.isSample]
-        results, all_passed = run_tests(code, sample_tests, question.expected_method, language)
-
-        return jsonify({
-            "passed": all_passed,
-            "results": results
-        })
-    except Exception as e:
-        return jsonify({"error": f"Error running sample tests: {str(e)}"}), 500
-
-@code_exec_blueprint.route("/submit/<int:question_id>", methods=["POST"])
-@login_required
-def submit_solution(question_id):
-    """Runs submitted code against test cases, returning results."""
-    data = request.get_json()
-    code = data.get("code")
-
-    if not code:
-        return jsonify({"error": "No code provided"}), 400
-
-    question = Question.query.get_or_404(question_id)
-    results, all_passed = run_tests(code, question.testCases, question.expected_method, language="python")
-
-    try:
-        submission = Submission(
-            userID=current_user.userID,
-            questionID=question_id,
-            code=code,
-            result="Passed" if all_passed else "Failed",
-            language="python"
-        )
-        db.session.add(submission)
-        db.session.commit()
-    except Exception as e:
-        return jsonify({"error": f"Failed to save submission: {str(e)}"}), 500
-
-    return jsonify({
-        "passed": all_passed,
-        "results": results
-    })
+func main() {{
+    // Set up test input
+    {input_declaration}
+    
+    // Call user function
+    {function_call}
+    
+    // Convert result to JSON for output
+    resultJSON, err := json.Marshal(result)
+    if err != nil {{
+        fmt.Printf("{{\\\"stderr\\\": \\\"Error serializing result: %v\\\"}}", err)
+        return
+    }}
+    
+    // Output result in JSON format for test runner to parse
+    fmt.Printf("{{\\\"result\\\": %s}}", resultJSON)
+}}
+"""
+    return formatted_code
