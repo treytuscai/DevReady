@@ -26,6 +26,9 @@ class Question(db.Model):
     createdDate = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     template_code = db.Column(db.Text, nullable=True)
     expected_method = db.Column(db.String(50), nullable=True)
+    template_code_js = db.Column(db.Text, nullable=True)
+    template_code_go = db.Column(db.Text, nullable=True)
+    template_code_ts = db.Column(db.Text, nullable=True)
 
     submissions = db.relationship('Submission', back_populates='question', lazy=True)
     questionTags = db.relationship('QuestionTag', back_populates='question', lazy=True)
