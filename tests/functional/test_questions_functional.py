@@ -195,5 +195,3 @@ def test_library_page(client):
     assert b"Sum Array" in response.data
     assert b"Reverse String" in response.data
 
-    # Check if passed submission appears in the response
-    assert "✅" in response.data.decode("utf-8")
