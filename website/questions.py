@@ -129,7 +129,7 @@ def get_all_completed_questions(user_id):
     '''Get all completed question IDs for a user'''
     completed_question_ids = set(
         db.session.query(Submission.questionID)
-        .filter(Submission.userID == user_id, Submission.result == "passed")
+        .filter(Submission.userID == user_id, Submission.result == "Passed")
         .distinct()
         .all()
     )
