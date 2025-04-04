@@ -181,7 +181,7 @@ def test_run_tests_all_passed():
         results, all_passed = run_tests(code, test_cases, "sumArray", "python")
     
     assert all_passed is True
-    assert all(r["passed"] for r in results)
+    assert all(r["Passed"] for r in results)
     assert len(results) == 2
 
 def test_run_tests_some_failed():
@@ -204,8 +204,8 @@ def test_run_tests_some_failed():
         results, all_passed = run_tests(code, test_cases, "sumArray", "python")
     
     assert all_passed is False
-    assert results[0]["passed"] is True
-    assert results[1]["passed"] is False
+    assert results[0]["Passed"] is True
+    assert results[1]["Passed"] is False
 
 def test_format_python():
     """
