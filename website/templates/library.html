@@ -9,11 +9,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="../static/FaviconLogo.svg">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light border-bottom">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center" href="/">
                 <img src="../static/DevReadyLogo.svg" alt="DevReady Logo" width="40" height="40" class="me-2">
@@ -40,7 +41,7 @@
     <!-- Main Content -->
     <div class="container mt-4">
         <h2>Problem Library</h2>
-        <p class="text-muted">Browse through problems by category. Click on a problem to view its details.</p>
+        <p class>Browse through problems by category. Click on a problem to view its details.</p>
 
         <!-- Bootstrap Accordion for Problem Categories -->
         <div class="accordion" id="problemAccordion">
@@ -64,18 +65,18 @@
                                 <div class="d-flex align-items-center">
                                     <!-- Checkmark for completed questions, empty box otherwise -->
                                     {% if question.questionID in completed_questions %}
-                                    <span class="me-2 text-success">✅</span>
+                                    <span class="me-2">✅</span>
                                     {% else %}
-                                    <span class="me-2 text-muted">⬜</span>
+                                    <span class="me-2">⬜</span>
                                     {% endif %}
-                                    <a href="/questions/{{ question.questionID }}" class="fw-bold text-dark">
+                                    <a href="/questions/{{ question.questionID }}" class = "accordion-link">
                                         {{ question.title }}
                                     </a>
                                 </div>
                                 <div class="d-flex align-items-center">
                                     <!-- Question Tags -->
                                     {% if question.tags %}
-                                    <span class="text-muted small me-2">
+                                    <span class="small me-2">
                                         {% for tag in question.tags %}
                                         {{ tag.name }}{% if not loop.last %}, {% endif %}
                                         {% endfor %}
@@ -98,7 +99,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light text-center text-muted py-3 mt-4 border-top">
+    <footer class="bg-light text-center py-3 mt-4 border-top">
         <small>© 2025 DevReady. All Rights Reserved.</small>
     </footer>
 

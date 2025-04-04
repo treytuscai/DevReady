@@ -1,7 +1,7 @@
 window.onload = function() {
     const editor = ace.edit("editor");
     editor.getSession().setMode("ace/mode/python");
-    editor.setTheme("ace/theme/xcode");
+    editor.setTheme("ace/theme/dracula");
     const template = document.getElementById("editor").dataset.template;
     if (template) editor.setValue(template, -1);
     editor.setOptions({
