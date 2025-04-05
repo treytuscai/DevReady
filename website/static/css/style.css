@@ -12,13 +12,36 @@ h1, h2, h3 {
     color: white;
 }
 
+.logo-container {
+    background-color: orange;
+    border-radius: 50%; /* Makes the container circular */
+    padding: 1px;
+    box-shadow: 0px 4px 15px rgba(255, 122, 0, 0.4);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    background: linear-gradient(135deg, rgba(255, 122, 0, 1) 0%, rgba(255, 192, 147, 0.8) 100%)
+}
+
+.logo {
+    width: 40px; /* Adjust based on logo size */
+    height: 40px; /* Adjust based on logo size */
+}
+
+.logo-container img{
+    position: relative;
+    left: 3px;
+}
+
+.logo-container:hover {
+    transform: scale(1.1); /* Slight zoom effect */
+    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); /* Larger shadow on hover */
+}
+
 /* Buttons */
 .btn {
     font-family: 'Poppins', sans-serif;
     font-weight: 600;
 }
 .hero {
-    min-width: 1000px;
     position: relative;
     overflow: hidden;
     color: white;
