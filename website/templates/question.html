@@ -23,6 +23,53 @@
         }
     </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-VL5DJ1Z64V"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    // Track page load time
+    const pageLoadTime = new Date().getTime();
+
+    // 50% chance to assign to group A or B
+    let group = Math.random() < 0.5 ? 'A' : 'B';
+
+    // Move the button for group B
+    if (group === 'B') {
+        let hintButton = document.getElementById('hint-btn');
+        let submitButton = document.getElementById('submit-btn');
+        submitButton.parentNode.insertBefore(hintButton, submitButton.nextSibling); // Move the button after the submit button
+    }
+    
+    // Track if the "Get Hint" button was clicked
+    let hintClicked = false;
+    document.getElementById('hint-btn').addEventListener('click', function () {
+        hintClicked = true;
+        gtag('event', 'click', {
+            'event_category': 'AI Helper',
+            'event_label': 'Get Hint Button',
+            'value': 1,
+            'event_category': 'Group ' + group
+        });
+    });
+
+    // Track submit button click and time spent on the page
+    document.getElementById('submit-btn').addEventListener('click', function () {
+        const submitTime = new Date().getTime();
+        const timeSpent = (submitTime - pageLoadTime) / 1000; // Time in seconds
+
+        gtag('event', 'submit', {
+            'event_category': 'AI Helper',
+            'event_label': hintClicked ? 'Hint Used' : 'No Hint Used',
+            'value': timeSpent,
+            'event_category': 'Group ' + group
+        });
+    });
+
+    gtag('config', 'G-VL5DJ1Z64V');
+</script>
 
 <body>
     <!-- Navbar -->
