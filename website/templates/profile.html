@@ -44,12 +44,12 @@
             <!-- Profile Card -->
             <div class="col-md-4 mb-4">
                 <div class="card">
-                    <img src="{{ url_for('static', filename='default_profile.png') }}" class="card-img-top"
-                        alt="Profile Picture">
-                    <div class="card-body">
-                        <h5 class="card-title">{{ user.username }}</h5>
-                        <p class="card-text">A brief bio or summary about the user goes here. Share your passion for
-                            coding and your journey!</p>
+                    <div class="card border-0">
+                        <img src="{{ url_for('static', filename='default_profile.png') }}" class="card-img-top rounded-circle mx-auto d-block" style="width: 250px; height: 250px; object-fit: cover;" alt="Profile Picture">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ user.username }}</h5>
+                            <p class="card-text">{{ user.bio or "A brief bio or summary about the user goes here. Share your passion for coding and your journey!" }}</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -66,12 +66,12 @@
                                 <p>Problems Solved</p>
                             </div>
                             <div class="col">
-                                <h3>80%</h3>
+                                <h3>{{ (mastery_score * 100) | round(2) }}%</h3>
                                 <p>Concept Mastery</p>
                             </div>
                             <div class="col">
-                                <h3>5</h3>
-                                <p>Badges Earned</p>
+                                <h3>{{ language_stats }}</h3>
+                                <p>Languages Used</p>
                             </div>
                         </div>
                     </div>
@@ -88,6 +88,8 @@
                                 <li class="list-group-item">
                                     Question ID: {{ submission.question.title}} |
                                     Submitted on: {{ submission.time.strftime('%Y-%m-%d %H:%M:%S') }}
+                                    Language: {{ submission.language }}
+                                    Result: {{ submission.result }}
                                 </li>
                                 {% else %}
                                 <li class="list-group-item">No submissions yet.</li>

@@ -84,5 +84,5 @@ def test_get_all_completed_questions(app):
 
         # Expecting only q1 to be completed
         assert isinstance(completed_questions, set)
-        assert len(completed_questions) == 1  # Only 1 completed question
+        assert len(completed_questions) == 1
         assert list(completed_questions)[0] > 0

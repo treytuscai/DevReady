@@ -87,7 +87,7 @@ def sample_data(client, app):
             userID=test_user.userID,
             questionID=q1.questionID,
             code="def sumArray(arr): return sum(arr)",
-            result="passed",
+            result="Passed",
             runtime=12,
             language="python3",
             time=datetime.utcnow()

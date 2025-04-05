@@ -51,18 +51,34 @@
                         <h5>Account Settings</h5>
                     </div>
                     <div class="card-body">
-                        <form>
+                        <form method="POST" action="/newEmail">
                             <div class="mb-3">
                                 <label for="username" class="form-label">Username</label>
-                                <input type="text" class="form-control" id="username" placeholder="Enter your username"
-                                    value="Username">
+                                <input type="text" class="form-control" id="username" name="username"
+                                    value="{{ current_user.username }}" disabled>
                             </div>
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email Address</label>
-                                <input type="email" class="form-control" id="email" placeholder="name@example.com"
-                                    value="user@example.com">
+                                <input type="email" class="form-control" id="email" name="email"
+                                    placeholder="name@example.com" value="{{ current_user.email }}">
                             </div>
-                            <button type="submit" class="btn btn-submit">Update Account</button>
+                            <!-- Flash messages for email update -->
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                            <div class="flash-messages mb-3">
+                                {% for category, message in messages %}
+                                {% if category == 'email_warning' %}
+                                <div class="alert alert-warning">{{ message }}</div>
+                                {% elif category == 'email_danger' %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                                {% elif category == 'email_success' %}
+                                <div class="alert alert-success">{{ message }}</div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            <button type="submit" class="btn btn-primary">Update Account</button>
                         </form>
                     </div>
                 </div>
@@ -75,22 +91,39 @@
                         <h5>Security Settings</h5>
                     </div>
                     <div class="card-body">
-                        <form>
+                        <form method="POST" action="/newPassword">
                             <div class="mb-3">
                                 <label for="currentPassword" class="form-label">Current Password</label>
-                                <input type="password" class="form-control" id="currentPassword"
+                                <input type="password" class="form-control" id="currentPassword" name="current_password"
                                     placeholder="Current Password">
                             </div>
                             <div class="mb-3">
                                 <label for="newPassword" class="form-label">New Password</label>
-                                <input type="password" class="form-control" id="newPassword" placeholder="New Password">
+                                <input type="password" class="form-control" id="newPassword" name="new_password"
+                                    placeholder="New Password">
                             </div>
                             <div class="mb-3">
                                 <label for="confirmPassword" class="form-label">Confirm New Password</label>
-                                <input type="password" class="form-control" id="confirmPassword"
+                                <input type="password" class="form-control" id="confirmPassword" name="confirm_password"
                                     placeholder="Confirm New Password">
                             </div>
-                            <button type="submit" class="btn btn-submit">Change Password</button>
+                            <!-- Flash messages for password update -->
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                            {% if messages %}
+                            <div class="flash-messages mb-3">
+                                {% for category, message in messages %}
+                                {% if category == 'password_warning' %}
+                                <div class="alert alert-warning">{{ message }}</div>
+                                {% elif category == 'password_danger' %}
+                                <div class="alert alert-danger">{{ message }}</div>
+                                {% elif category == 'password_success' %}
+                                <div class="alert alert-success">{{ message }}</div>
+                                {% endif %}
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+                            {% endwith %}
+                            <button type="submit" class="btn btn-primary">Change Password</button>
                         </form>
                     </div>
                 </div>
