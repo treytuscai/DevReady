@@ -56,7 +56,10 @@
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card border-0">
-                        <img src="{{ url_for('static', filename='default_profile.png') }}" class="card-img-top rounded-circle mx-auto d-block" style="width: 250px; height: 250px; object-fit: cover;" alt="Profile Picture">
+                        <img src="{{ url_for('static', filename='default_profile.png') }}" 
+                            class="profile-img card-img-top rounded-circle mx-auto d-block img-fluid"
+                            style="width: 250px;"
+                            alt="Profile Picture">
                         <div class="card-body">
                             <h5 class="card-title">{{ user.username }}</h5>
                             <p class="card-text">{{ user.bio or "A brief bio or summary about the user goes here. Share your passion for coding and your journey!" }}</p>
