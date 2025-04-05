@@ -307,15 +307,13 @@ footer {
 /* Accordion Container */
 .accordion {
     background-color: #1E1E1E;
-    border-radius: 10px;
-    border: 1px solid rgba(255, 122, 0, 0.2);
     overflow: hidden;
 }
 
 /* Accordion Items */
 .accordion-item {
     background-color: #1A1A1A;
-    border-bottom: 1px solid rgba(255, 122, 0, 0.1);
+    border: 1px solid orange;
 }
 
 /* Header Button */
@@ -330,12 +328,6 @@ footer {
 .accordion-button:not(.collapsed) {
     background-color: #222;
     color: #FF7A00;
-    box-shadow: inset 0 -1px 0 rgba(255, 122, 0, 0.4);
-}
-
-.accordion-button:hover {
-    background-color: #262626;
-    color: #FF9900;
 }
 
 /* Accordion Body */
@@ -350,20 +342,14 @@ footer {
     filter: invert(100%) sepia(5%) saturate(0%) hue-rotate(180deg) brightness(105%) contrast(101%);
 }
 
-.accordion-button:not(.collapsed) {
-    box-shadow: 0 0 10px rgba(255, 122, 0, 0.3);
-}
 /* List Group Styling Inside Accordion */
 .accordion .list-group-item {
     background-color: #1A1A1A;
     color: #EAEAEA;
-    border: 1px solid rgba(255, 122, 0, 0.1);
-    transition: background-color 0.3s, box-shadow 0.3s;
 }
 
 .accordion .list-group-item:hover {
     background-color: #222222;
-    box-shadow: 0 0 8px rgba(255, 122, 0, 0.3);
 }
 
 /* Links inside list items */
