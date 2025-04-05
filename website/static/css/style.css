@@ -1,0 +1,447 @@
+/* Global Font */
+body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    color: #EAEAEA; /* Light text for dark mode */
+}
+
+/* Headings */
+h1, h2, h3 {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: white;
+}
+
+/* Buttons */
+.btn {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+}
+.hero {
+    min-width: 1000px;
+    position: relative;
+    overflow: hidden;
+    color: white;
+}
+
+.hero-overlay {
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+    z-index: 2;
+}
+
+/* Hero Heading - Make "Welcome to DevReady" Larger */
+.hero h1 {
+    font-weight: 900;
+    color: white;
+}
+
+/* Hero Subtext - Make the tagline more readable */
+.hero p {
+    font-size: 2rem; 
+    font-weight: 400;
+    color: #EAEAEA; 
+
+}
+
+@media (min-width: 768px) {
+    .hero p {
+        margin-bottom: 40px;
+    }
+}
+
+/* Global Dark Theme */
+body {
+    background-color: #121212; /* Dark background */
+    color: #EAEAEA; /* Light text */
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Navbar */
+.navbar {
+    background: rgba(30, 30, 30, 0.9); /* Dark semi-transparent navbar */
+    backdrop-filter: blur(10px); /* Glass effect */
+}
+
+.navbar-brand, .navbar-nav .nav-link {
+    color: #EAEAEA !important;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FF7A00 !important; /* Neon Orange */
+}
+
+/* Style the navbar */
+.navbar {
+    justify-content: space-between;
+    background: rgba(30, 30, 30, 0.9); /* Dark semi-transparent background */
+    backdrop-filter: blur(10px);
+}
+
+/* Style "DevReady" logo */
+.navbar-brand {
+    font-family: 'Inter', sans-serif;
+    font-size: 24px;
+    font-weight: 700;
+    color: white; /* Base color */
+    background: linear-gradient(135deg, #FF7A00 0%, #EAEAEA 50%, #FF7A00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 0px 5px rgba(255, 122, 0, 0.6), 0px 0px 10px rgba(255, 122, 0, 0.3);
+}
+
+/* Center navbar links */
+.navbar-nav {
+    margin: auto;
+    text-align: center;
+}
+
+
+.navbar-nav .nav-link {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #EAEAEA !important;
+    text-transform: uppercase;
+}
+
+.navbar-nav .nav-link:hover {
+    color: #FF7A00 !important; /* Neon orange on hover */
+}
+
+.navbar-text {
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #EAEAEA;
+}
+
+.navbar-user{
+    font-family: 'Inter', sans-serif;
+    font-size: 16px;
+    font-weight: 500;
+    color: #EAEAEA;
+    display: flex;
+    align-items: center;
+}
+
+.navbar-text i {
+    /* margin-right: 8px; */
+    color: #FF7A00
+}
+
+.navbar-collapse .navbar-nav{
+    color: #FF7A00 !important;
+}
+
+.navbar-toggler {
+    border-color: rgba(255, 122, 0, 0.8); /* Orange border */
+    color: #FF7A00
+}
+
+.navbar-toggler-icon {
+    background-image: url("data:image/svg+xml;charset=UTF8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3E%3Cpath stroke='rgba(255, 122, 0, 1)' stroke-width='3' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3E%3C/svg%3E");
+}
+
+/* Hero Section */
+.hero {
+    background: #1E1E1E; /* Slightly lighter than body background */
+}
+
+.hero-overlay {
+    background: rgba(0, 0, 0, 0.6); /* Darker overlay */
+}
+
+.hero-title {
+    font-size: 6rem; /* Large text */
+    font-weight: 900;
+    color: white; /* Default color for "Welcome to" */
+    word-wrap: break-word;
+}
+
+.hero-title .devready-highlight {
+    background: linear-gradient(135deg, #FF7A00 0%, #EAEAEA 50%, #FF7A00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 0px 5px rgba(255, 122, 0, 0.6), 0px 0px 10px rgba(255, 122, 0, 0.3);
+}
+
+/* Make it smaller on tablets */
+@media (max-width: 992px) {
+    .hero-title {
+        font-size: 6rem;
+    }
+}
+
+/* Make it even smaller on mobile */
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 4rem;
+    }
+}
+
+/* Smallest screens (phones) */
+@media (max-width: 480px) {
+    .hero-title {
+        font-size: 3rem;
+    }
+}
+
+/* Buttons */
+.btn-custom {
+    background: linear-gradient(90deg, #FF7A00, #FF9900);
+    color: white;
+    border: none;
+    transition: 0.3s ease-in-out;
+}
+
+.btn-custom:hover {
+    box-shadow: 0px 4px 10px rgba(255, 122, 0, 0.6);
+    transform: translateY(-2px);
+}
+
+/* Features Section */
+.bg-light {
+    background-color: #1E1E1E !important;
+}
+
+.btn-testcase {
+    background-color: #1a1a1a;
+    color: #ccc;
+    border: 1px solid #444;
+    /* padding: 8px 16px; */
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+  
+.btn-testcase:hover {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-color: #ff7a00;
+}
+  
+.btn-testcase.active {
+    background-color: #ff7a00;
+    color: black;
+    font-weight: bold;
+    border-color: #ff9500;
+    box-shadow: 0 0 10px rgba(255, 122, 0, 0.4);
+}
+
+.btn-run {
+    background-color: #2C2C2C;
+    color: #EAEAEA;
+    border: none;
+}
+.btn-run:hover {
+    background-color: #3C3C3C;
+    box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+}
+
+.btn-submit {
+    background: linear-gradient(90deg, #FF9900, #FF7A00);
+    color: #121212;
+    font-weight: bold;
+    border: none;
+}
+.btn-submit:hover {
+    box-shadow: 0 0 12px rgba(255, 122, 0, 0.7);
+    transform: translateY(-1px);
+}
+
+.btn-skip {
+    background-color: #2C2C2C;
+    color: #BBBBBB;
+    border: none;
+}
+.btn-skip:hover {
+    background-color: #660000;
+    color: white;
+}
+
+/* Footer */
+footer {
+    background: #000000;
+    color: #BBBBBB;
+}
+
+/* Feature Cards - Alternating Colors */
+.card:nth-child(odd) {
+    background: #1E1E1E; /* Dark Gray */
+}
+
+.card:nth-child(even) {
+    background: #222222; /* Slightly Lighter Gray */
+}
+
+/* Card Text & Borders */
+.card {
+    /* position: relative; */
+    color: #EAEAEA;
+    border: 1px solid rgba(255, 122, 0, 0.6); /* Subtle orange border */
+    border-radius: 12px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
+    z-index: 2;
+}
+
+/* Hover Effect - Subtle Glow */
+.card:hover {
+    position: relative;
+    transform: translateY(-5px);
+    box-shadow:
+            0px 0px 15px rgba(255, 122, 0, 0.6),  
+            0px 0px 50px rgba(255, 122, 0, 0.4),
+            0px 0px 80px rgba(255, 122, 0, 0.2);
+        border: 1px solid rgba(255, 122, 0, 1);
+        z-index: 10;
+}
+
+/* Card Titles - Brighter for Contrast */
+.card-title {
+    color: #FF7A00; /* Neon Orange */
+    font-weight: 700;
+}
+
+/* Accordion Container */
+.accordion {
+    background-color: #1E1E1E;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 122, 0, 0.2);
+    overflow: hidden;
+}
+
+/* Accordion Items */
+.accordion-item {
+    background-color: #1A1A1A;
+    border-bottom: 1px solid rgba(255, 122, 0, 0.1);
+}
+
+/* Header Button */
+.accordion-button {
+    background-color: #1A1A1A;
+    color: #EAEAEA;
+    font-weight: 600;
+    border: none;
+    font-family: 'Inter', sans-serif;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: #222;
+    color: #FF7A00;
+    box-shadow: inset 0 -1px 0 rgba(255, 122, 0, 0.4);
+}
+
+.accordion-button:hover {
+    background-color: #262626;
+    color: #FF9900;
+}
+
+/* Accordion Body */
+.accordion-body {
+    background-color: #1E1E1E;
+    color: #CCCCCC;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Remove Bootstrap icon override */
+.accordion-button::after {
+    filter: invert(100%) sepia(5%) saturate(0%) hue-rotate(180deg) brightness(105%) contrast(101%);
+}
+
+.accordion-button:not(.collapsed) {
+    box-shadow: 0 0 10px rgba(255, 122, 0, 0.3);
+}
+/* List Group Styling Inside Accordion */
+.accordion .list-group-item {
+    background-color: #1A1A1A;
+    color: #EAEAEA;
+    border: 1px solid rgba(255, 122, 0, 0.1);
+    transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.accordion .list-group-item:hover {
+    background-color: #222222;
+    box-shadow: 0 0 8px rgba(255, 122, 0, 0.3);
+}
+
+/* Links inside list items */
+.accordion .list-group-item a 
+.accordion .list-group-item a:visited{
+    color: #FF7A00 !important;
+    text-decoration: none;
+}
+
+.accordion .list-group-item a:hover {
+    text-decoration: underline;
+}
+
+/* Checkmark & tags */
+.accordion .list-group-item .text-muted {
+    color: #BBBBBB !important;
+}
+
+/* Badge Styling (difficulty) */
+.badge.bg-success {
+    background-color: #00c851 !important; /* brighter green */
+}
+
+.badge.bg-warning {
+    background-color: #ffbb33 !important; /* strong amber */
+    color: black;
+}
+
+.badge.bg-danger {
+    background-color: #ff4444 !important; /* vibrant red */
+}
+
+.accordion-link {
+    color: #EAEAEA;                /* Light text for dark theme */
+    font-weight: 600;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.accordion-link:hover {
+    color: #FF7A00;                /* Bright orange on hover */
+    text-decoration: underline;
+}
+
+.breadcrumb {
+    background-color: transparent;
+    padding: 0;
+    margin-bottom: 1rem;
+}
+
+.breadcrumb-item {
+    color: #EAEAEA;  /* Light text for breadcrumb links */
+    font-weight: 500;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+}
+
+.breadcrumb-item + .breadcrumb-item::before {
+    color: #FF7A00;  /* Orange separator (usually '>') */
+    content: "›";
+}
+
+.breadcrumb-item a {
+    color: #FF7A00;
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.breadcrumb-item a:hover {
+    color: #FFA94D; /* Lighter orange on hover */
+    text-decoration: underline;
+}
+
+.breadcrumb-item.active {
+    color: #EAEAEA;
+    font-weight: 600;
+}

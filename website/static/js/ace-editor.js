@@ -1,13 +1,10 @@
 document.addEventListener("DOMContentLoaded", function() {
     const editor = ace.edit("editor");
-    editor.setTheme("ace/theme/xcode");
-    editor.session.setMode("ace/mode/python");
-
-    const defaultTemplate = document.getElementById("editor").dataset.template;
-    if (defaultTemplate) {
-        editor.setValue(defaultTemplate, -1);
-    }
-
+    editor.getSession().setMode("ace/mode/python");
+    editor.setTheme("ace/theme/dracula");
+    const template = document.getElementById("editor").dataset.template;
+    if (template) editor.setValue(template, -1);
+  
     editor.setOptions({
         fontSize: "14px",
         showPrintMargin: false,

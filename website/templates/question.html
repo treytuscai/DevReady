@@ -9,11 +9,13 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="icon" type="image/svg+xml" href="../static/FaviconLogo.svg">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Ace Editor -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"></script>
     <style>
         .tag {
             background-color: #e9ecef;
+            color: black;
             padding: 0.25rem 0.5rem;
             border-radius: 0.25rem;
             margin-right: 0.5rem;
@@ -62,7 +64,7 @@
             <div class="col-md-4">
                 <!-- Question Details Section -->
                 <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-start">
+                    <div class="card-header">
                         <div>
                             <h5 id="question-title" data-question-id="{{ question.questionID }}">{{ question.title }}
                             </h5>
@@ -108,12 +110,12 @@
                 <div class="card">
                     <div class="card-header">
                         <h5>AI Helper</h5>
-                        <small class="text-muted">Need help? Get a hint based on your code.</small>
+                        <small>Need help? Get a hint based on your code.</small>
                     </div>
                     <div class="card-body">
                         <div id="chat-box" class="output-area p-2 bg-light border rounded overflow-scroll"
                             style="height: 250px;">
-                            <div class="text-center text-muted mb-2">
+                            <div class="text-center mb-2">
                                 <small>Click "Get Hint" to receive AI guidance.</small>
                             </div>
                         </div>
@@ -154,10 +156,10 @@
                             data-template="{{ question.template_code | default('')}}"></div>
                         <div class="d-flex justify-content-end gap-2 mt-2">
                             <button type="button" id="run-btn" onclick="executeCode('run', false)"
-                                class="btn btn-secondary">Run</button>
+                                class="btn btn-run">Run</button>
                             <button type="button" id="submit-btn" onclick="executeCode('submit', true)"
-                                class="btn btn-dark">Submit</button>
-                            <button type="button" id="skip-btn" class="btn btn-warning">Skip</button>
+                                class="btn btn-submit">Submit</button>
+                            <button type="button" id="skip-btn" class="btn btn-skip">Skip</button>
                         </div>
                     </div>
                 </div>
@@ -168,7 +170,7 @@
                     <div class="card-body">
                         <div id="test-case-buttons" class="d-flex flex-wrap gap-2">
                             {% for sample_test in sample_tests %}
-                            <button class="btn btn-outline-dark {% if loop.first %}active{% endif %}"
+                            <button class="btn-testcase {% if loop.first %}active{% endif %}"
                                 onclick="showTestCase(null, '{{ sample_test.inputData | escape }}', null, null, '{{ sample_test.expectedOutput | escape }}', this, true)">
                                 Case {{ loop.index }}
                             </button>
@@ -209,7 +211,7 @@
     </div>
 
     <!-- Footer -->
-    <footer class="bg-light text-center text-muted py-3 mt-4 border-top">
+    <footer class="bg-light text-center py-3 mt-4 border-top">
         <small>© 2025 DevReady. All Rights Reserved.</small>
     </footer>
 
