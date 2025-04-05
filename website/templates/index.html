@@ -20,6 +20,33 @@
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
 
+    // Track page load time
+    const pageLoadTime = new Date().getTime();
+
+    // Track if the "Get Hint" button was clicked
+    let hintClicked = false;
+
+    document.getElementById('hint-btn').addEventListener('click', function () {
+        hintClicked = true;
+        gtag('event', 'click', {
+            'event_category': 'AI Helper',
+            'event_label': 'Get Hint Button',
+            'value': 1
+        });
+    });
+
+    // Track submit button click and time spent on the page
+    document.getElementById('submit-btn').addEventListener('click', function () {
+        const submitTime = new Date().getTime();
+        const timeSpent = (submitTime - pageLoadTime) / 1000; // Time in seconds
+
+        gtag('event', 'submit', {
+            'event_category': 'AI Helper',
+            'event_label': hintClicked ? 'Hint Used' : 'No Hint Used',
+            'value': timeSpent
+        });
+    });
+
     gtag('config', 'G-VL5DJ1Z64V');
 </script>
 <style>
