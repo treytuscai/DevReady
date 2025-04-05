@@ -12,30 +12,6 @@ h1, h2, h3 {
     color: white;
 }
 
-.logo-container {
-    background-color: orange;
-    border-radius: 50%; /* Makes the container circular */
-    padding: 1px;
-    box-shadow: 0px 4px 15px rgba(255, 122, 0, 0.4);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    background: linear-gradient(135deg, rgba(255, 122, 0, 1) 0%, rgba(255, 192, 147, 0.8) 100%)
-}
-
-.logo {
-    width: 40px; /* Adjust based on logo size */
-    height: 40px; /* Adjust based on logo size */
-}
-
-.logo-container img{
-    position: relative;
-    left: 3px;
-}
-
-.logo-container:hover {
-    transform: scale(1.1); /* Slight zoom effect */
-    box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.3); /* Larger shadow on hover */
-}
-
 /* Buttons */
 .btn {
     font-family: 'Poppins', sans-serif;
@@ -88,6 +64,10 @@ body {
     backdrop-filter: blur(10px); /* Glass effect */
 }
 
+.navbar-brand img{
+    filter: invert(1) grayscale(100%) brightness(100%);
+}
+
 .navbar-brand, .navbar-nav .nav-link {
     color: #EAEAEA !important;
 }
@@ -98,7 +78,6 @@ body {
 
 /* Style the navbar */
 .navbar {
-    justify-content: space-between;
     background: rgba(30, 30, 30, 0.9); /* Dark semi-transparent background */
     backdrop-filter: blur(10px);
 }
@@ -112,20 +91,14 @@ body {
     background: linear-gradient(135deg, #FF7A00 0%, #EAEAEA 50%, #FF7A00 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0px 0px 5px rgba(255, 122, 0, 0.6), 0px 0px 10px rgba(255, 122, 0, 0.3);
-}
-
-/* Center navbar links */
-.navbar-nav {
-    margin: auto;
-    text-align: center;
+    text-shadow: 0px 0px 1px rgba(255, 122, 0, 0.6), 0px 0px 5px rgba(255, 122, 0, 0.3);
 }
 
 
 .navbar-nav .nav-link {
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
     font-size: 16px;
-    font-weight: 500;
+    font-weight: 400;
     color: #EAEAEA !important;
     text-transform: uppercase;
 }
@@ -146,8 +119,6 @@ body {
     font-size: 16px;
     font-weight: 500;
     color: #EAEAEA;
-    display: flex;
-    align-items: center;
 }
 
 .navbar-text i {
@@ -217,12 +188,11 @@ body {
     background: linear-gradient(90deg, #FF7A00, #FF9900);
     color: white;
     border: none;
-    transition: 0.3s ease-in-out;
+    transition: 0.1s ease-in-out;
 }
 
 .btn-custom:hover {
-    box-shadow: 0px 4px 10px rgba(255, 122, 0, 0.6);
-    transform: translateY(-2px);
+    color: #121212
 }
 
 /* Features Section */
@@ -306,23 +276,11 @@ footer {
 .card {
     /* position: relative; */
     color: #EAEAEA;
-    border: 1px solid rgba(255, 122, 0, 0.6); /* Subtle orange border */
+    border: 1px solid orange; /* Subtle orange border */
     border-radius: 12px;
-    transition: transform 0.3s ease-in-out, box-shadow 0.3s;
     z-index: 2;
 }
 
-/* Hover Effect - Subtle Glow */
-.card:hover {
-    position: relative;
-    transform: translateY(-5px);
-    box-shadow:
-            0px 0px 15px rgba(255, 122, 0, 0.6),  
-            0px 0px 50px rgba(255, 122, 0, 0.4),
-            0px 0px 80px rgba(255, 122, 0, 0.2);
-        border: 1px solid rgba(255, 122, 0, 1);
-        z-index: 10;
-}
 
 /* Card Titles - Brighter for Contrast */
 .card-title {
