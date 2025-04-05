@@ -23,15 +23,25 @@
     // Track page load time
     const pageLoadTime = new Date().getTime();
 
+    // 50% chance to assign to group A or B
+    let group = Math.random() < 0.5 ? 'A' : 'B';
+
+    // Move the button for group B
+    if (group === 'B') {
+        let hintButton = document.getElementById('hint-btn');
+        let submitButton = document.getElementById('submit-btn');
+        submitButton.parentNode.insertBefore(hintButton, submitButton.nextSibling); // Move the button after the submit button
+    }
+    
     // Track if the "Get Hint" button was clicked
     let hintClicked = false;
-
     document.getElementById('hint-btn').addEventListener('click', function () {
         hintClicked = true;
         gtag('event', 'click', {
             'event_category': 'AI Helper',
             'event_label': 'Get Hint Button',
-            'value': 1
+            'value': 1,
+            'event_category': 'Group ' + group
         });
     });
 
@@ -43,7 +53,8 @@
         gtag('event', 'submit', {
             'event_category': 'AI Helper',
             'event_label': hintClicked ? 'Hint Used' : 'No Hint Used',
-            'value': timeSpent
+            'value': timeSpent,
+            'event_category': 'Group ' + group
         });
     });
 
