@@ -1,5 +1,6 @@
 """Methods for code execution"""
 import json
+import re
 import requests
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
@@ -250,7 +251,79 @@ def format_javascript(code, test_input, expected_method):
 
     js_input = json.dumps(test_input)
     print("js_input: ", js_input)
-    print("Full code: ")
+    
+    # Add special handling for common problem types
+    function_call_block = ""
+    
+    try:
+        input_data = json.loads(test_input)
+        
+        if isinstance(input_data, dict):
+            # TwoSum (#1)
+            if expected_method.lower() == "twosum" and "nums" in input_data and "target" in input_data:
+                function_call_block = f"""
+                if (typeof twoSum === 'function') {{
+                    result = twoSum(input.nums, input.target);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).twoSum === 'function') {{
+                    const solution = new Solution();
+                    result = solution.twoSum(input.nums, input.target);
+                }}"""
+                
+            # FindMedianSortedArrays (#4)
+            elif expected_method.lower() == "findmediansortedarrays" and "nums1" in input_data and "nums2" in input_data:
+                function_call_block = f"""
+                if (typeof findMedianSortedArrays === 'function') {{
+                    result = findMedianSortedArrays(input.nums1, input.nums2);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).findMedianSortedArrays === 'function') {{
+                    const solution = new Solution();
+                    result = solution.findMedianSortedArrays(input.nums1, input.nums2);
+                }}"""
+                
+            # ZigZag Conversion (#6)
+            elif expected_method.lower() == "convert" and "s" in input_data and "numRows" in input_data:
+                function_call_block = f"""
+                if (typeof convert === 'function') {{
+                    result = convert(input.s, input.numRows);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).convert === 'function') {{
+                    const solution = new Solution();
+                    result = solution.convert(input.s, input.numRows);
+                }}"""
+                
+            # Regular Expression Matching (#10)
+            elif expected_method.lower() == "ismatch" and "s" in input_data and "p" in input_data:
+                function_call_block = f"""
+                if (typeof isMatch === 'function') {{
+                    result = isMatch(input.s, input.p);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).isMatch === 'function') {{
+                    const solution = new Solution();
+                    result = solution.isMatch(input.s, input.p);
+                }}"""
+                
+            # 3Sum Closest (#16)
+            elif expected_method.lower() == "threesumclosest" and "nums" in input_data and "target" in input_data:
+                function_call_block = f"""
+                if (typeof threeSumClosest === 'function') {{
+                    result = threeSumClosest(input.nums, input.target);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).threeSumClosest === 'function') {{
+                    const solution = new Solution();
+                    result = solution.threeSumClosest(input.nums, input.target);
+                }}"""
+    except:
+        pass
+            
+            # If we didn't set a special function call block, use the default behavior
+    if not function_call_block:
+        function_call_block = f"""
+        if (typeof {expected_method} === 'function') {{
+            result = {expected_method}(input);
+        }}
+        else if (typeof Solution === 'function' && typeof (new Solution())['{expected_method}'] === 'function') {{
+            const solution = new Solution();
+            result = solution['{expected_method}'](input);
+        }}
+        else if (typeof {expected_method}Solution === 'function') {{
+            result = {expected_method}Solution(input);
+        }}"""
     
     formatted_code = f"""
 // User submitted code:
@@ -264,24 +337,13 @@ def format_javascript(code, test_input, expected_method):
     let stderr_capture = ""; 
 
     try {{
-        // check if expected_method exists as a global function
-        if (typeof {expected_method} === 'function') {{
-            result = {expected_method}(input);
-        }}
-        else if (typeof Solution === 'function' && typeof (new Solution())['{expected_method}'] === 'function') {{
-            // Create instance and call method
-            const solution = new Solution();
-            result = solution['{expected_method}'](input);
-        }}
-        else if (typeof {expected_method}Solution === 'function') {{
-            result = {expected_method}Solution(input);
-        }}
+        {function_call_block}
         else {{
             throw new Error(`Runtime Error: Function '{expected_method}' not found. Make sure it's defined as a global function, a method on a Solution class, or matches expected naming patterns.`);
         }}
     }} catch (e) {{
         stderr_capture = e.toString();
-        result = null; // Ensure result is null if an error occurred
+        result = null;
     }}
     
     console.log(JSON.stringify({{
@@ -296,15 +358,67 @@ def format_javascript(code, test_input, expected_method):
 
 
 def execute_typescript_as_javascript(code, test_input, expected_method):
-    """Strips TypeScript type annotations and runs as JavaScript."""
+    """
+    Converts TypeScript to JavaScript by stripping type annotations.
+    Uses a regex to capture function declarations and then splits parameters
+    on commas to remove each type annotation.
+    """
+    # Regex to capture function declaration with parameters and optional return type.
+    function_pattern = re.compile(
+        r'function\s+([a-zA-Z0-9_$]+)\s*\(\s*(.*?)\s*\)\s*(?::\s*[a-zA-Z0-9_$<>\[\],\s|&{}]+)?\s*\{',
+        flags=re.DOTALL
+    )
 
-    import re
+    def process_function_match(match):
+        func_name = match.group(1)
+        params = match.group(2)
+        # Split parameters by comma and remove type annotations for each
+        def strip_param(param):
+            return re.sub(r'\s*:\s*.*', '', param).strip()
+        param_list = [strip_param(p) for p in params.split(',') if p.strip()]
+        new_params = ', '.join(param_list)
+        return f'function {func_name}({new_params}) {{'
 
-    # Strip TypeScript type annotations
-    js_code = re.sub(r'\)\s*:\s*[a-zA-Z0-9<>[\],\s|]+\s*{', ') {', code)
-    js_code = re.sub(r'(\w+)\s*:\s*[a-zA-Z0-9<>[\],\s|]+', r'\1', js_code)
+    # Apply the function signature stripping:
+    js_code = function_pattern.sub(process_function_match, code)
 
-    # Use the JS formatter with the type-stripped code
+    # Remove other type-level syntax:
+    # 1. Object type annotations (e.g., "const obj: { [key: string]: number } = {}")
+    js_code = re.sub(
+        r'(const|let|var)\s+([a-zA-Z0-9_$]+)\s*:\s*\{\s*\[[^\]]+\]\s*:[^=]+\}\s*=',
+        r'\1 \2 =',
+        js_code
+    )
+    # 2. Variable declarations with types (e.g., "let x: number = ...")
+    js_code = re.sub(
+        r'(let|var|const)\s+([a-zA-Z0-9_$]+)\s*:\s*[a-zA-Z0-9_$<>\[\],\s|&{}]+\s*=',
+        r'\1 \2 =',
+        js_code
+    )
+    # 3. Class field declarations with types (e.g., "field: number;")
+    js_code = re.sub(
+        r'([a-zA-Z0-9_$]+)\s*:\s*[a-zA-Z0-9_$<>\[\],\s|&{}]+\s*;',
+        r'\1;',
+        js_code
+    )
+    # 4. Remove interface or type definitions entirely
+    interface_type_pattern = re.compile(
+        r'(interface|type)\s+[a-zA-Z0-9_$]+\s*(\{\s*[^}]*\}|\s*=\s*[^;]*);?',
+        re.DOTALL
+    )
+    js_code = interface_type_pattern.sub('', js_code)
+    # 5. Remove generic type annotations (e.g., "<number, string>")
+    js_code = re.sub(r'<[a-zA-Z0-9_$<>\[\],\s|&{}]+>', '', js_code)
+    # 6. Remove type assertions (e.g., "as SomeType")
+    js_code = re.sub(r'\s+as\s+[a-zA-Z0-9_$<>\[\],\s|&{}]+', '', js_code)
+    # 7. Remove non-null assertions (e.g., "variable!")
+    js_code = re.sub(r'([a-zA-Z0-9_$\.\(\)\[\]]+)!', r'\1', js_code)
+
+    print("Converted TypeScript to JavaScript:")
+    snippet_preview = js_code[:200] + "..." if len(js_code) > 200 else js_code
+    print(snippet_preview)
+
+    # Now wrap the stripped code in our standard JavaScript test runner:
     return format_javascript(js_code, test_input, expected_method)
 
 def format_go(code, test_input, expected_method):
@@ -357,17 +471,48 @@ def format_go(code, test_input, expected_method):
                 input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
                 function_call = f"result := {expected_method}(input)"
     elif isinstance(input_data, dict):
-        # Handle map input
-        input_declaration = "// Map input, using JSON parsing"
-        json_str = json.dumps(input_data)
-        input_declaration += f"\ninputJSON := `{json_str}`"
-        input_declaration += "\nvar input map[string]interface{}"
-        input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
-        function_call = f"result := {expected_method}(input)"
-    elif isinstance(input_data, int):
+        
+        if expected_method.lower() == "twosum" and "nums" in input_data and "target" in input_data:
+            #Two Sum (#1)
+            nums = input_data["nums"]
+            target = input_data["target"]
+            if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
+                input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
+                function_call = f"result := {expected_method}(nums, target)"
+        elif expected_method.lower() == "findmediansortedarrays" and "nums1" in input_data and "nums2" in input_data:
+            #Find Median of Sorted Arrays (#4)
+            nums1 = input_data["nums1"]
+            nums2 = input_data["nums2"]
+            if isinstance(nums1, list) and all(isinstance(x, int) for x in nums1) and isinstance(nums2, list) and all(isinstance(x, int) for x in nums2):
+                input_declaration = f"nums1 := []int{{{', '.join(map(str, nums1))}}}\nnums2 := []int{{{', '.join(map(str, nums2))}}}"
+                function_call = f"result := {expected_method}(nums1, nums2)"
+                
+        elif expected_method.lower() == "convert" and "s" in input_data and "numRows" in input_data:
+            #Zigzag Conversion (#6)
+            s = input_data["s"]
+            numRows = input_data["numRows"]
+            if isinstance(s, str) and isinstance(numRows, int):
+                input_declaration = f"s := \"{s}\"\nnumRows := {numRows}"
+                function_call = f"result := {expected_method}(s, numRows)"
+        elif expected_method.lower() == "ismatch" and "s" in input_data and "p" in input_data:
+            #Regular Expression Matching (#10)
+            s = input_data["s"]
+            p = input_data["p"]
+            if isinstance(s, str) and isinstance(p, str):
+                input_declaration = f"s := \"{s}\"\np := \"{p}\""
+                function_call = f"result := isMatch(s, p)"
+        elif expected_method.lower() == "threesumclosest" and "nums" in input_data and "target" in input_data:
+            #3Sum Closest (#16)
+            nums = input_data["nums"]
+            target = input_data["target"]
+            if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
+                input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
+                function_call = f"result := threeSumClosest(nums, target)"
+        elif isinstance(input_data, int):
         # Single integer
-        input_declaration = f"input := {input_data}"
-        function_call = f"result := {expected_method}(input)"
+            input_declaration = f"input := {input_data}"
+            function_call = f"result := {expected_method}(input)"
+            
     elif isinstance(input_data, float):
         # Single float
         input_declaration = f"input := {input_data}"
@@ -384,15 +529,6 @@ def format_go(code, test_input, expected_method):
         input_declaration += "\nvar input interface{}"
         input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
         function_call = f"result := {expected_method}(input)"
-
-    if isinstance(input_data, list) and len(input_data) == 2 and expected_method.lower() in ["twosum"]: #Add more later
-        if isinstance(input_data[0], list) and isinstance(input_data[1], (int, float)):
-            # Format like: twoSum([2,7,11,15], 9)
-            nums = input_data[0]
-            target = input_data[1]
-            if all(isinstance(x, int) for x in nums):
-                input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
-                function_call = f"result := {expected_method}(nums, target)"
 
     formatted_code = f"""
 package main
@@ -424,3 +560,4 @@ func main() {{
 }}
 """
     return formatted_code
+
