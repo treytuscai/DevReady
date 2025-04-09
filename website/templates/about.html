@@ -31,15 +31,15 @@
 <body>
     <!-- Navbar -->
     <nav class="navbar navbar-dark" style="border-bottom: 1px solid orange;">
-        <div class="container position-relative">
-            <!-- Left: Logo -->
-            <a class="navbar-brand d-flex align-items-center" href="/">
+        <div class="container d-flex justify-content-start align-items-center">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center me-3" href="/">
                 <img src="{{ url_for('static', filename='DevReadyLogo.svg') }}" alt="DevReady Logo" width="40"
                     height="40">
                 <span class="ms-2 d-none d-md-inline">DevReady</span>
             </a>
-            <!-- Center: Nav Links -->
-            <div class="position-absolute top-50 start-50 translate-middle">
+            <!-- Nav Links next to the Brand -->
+            <ul class="navbar-nav flex-row">
                 <ul class="navbar-nav d-inline-flex flex-row">
                     <li class="nav-item">
                         <a class="nav-link px-2" href="/login">Login</a>

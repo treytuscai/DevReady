@@ -23,29 +23,29 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container">
-            <a class="navbar-brand d-flex align-items-center justify-content-center" href="/">
-                <div class="container logo-container justify-content-center align-items-center">
-                    <img src="{{ url_for('static', filename='DevReadyLogo.svg') }}" alt="DevReady Logo" width="40" height="40" class="me-2">
-                </div>
-                <span class="ms-2">DevReady</span>
+    <nav class="navbar navbar-dark" style="border-bottom: 1px solid orange;">
+        <div class="container d-flex justify-content-start align-items-center">
+            <!-- Brand -->
+            <a class="navbar-brand d-flex align-items-center me-3" href="/">
+                <img src="{{ url_for('static', filename='DevReadyLogo.svg') }}" alt="DevReady Logo" width="40"
+                    height="40">
+                <span class="ms-2 d-none d-md-inline">DevReady</span>
             </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTabs"
-                aria-controls="navbarTabs" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarTabs">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="/library">Library</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/profile">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
-                </ul>
-                <span class="navbar-text">
-                    Hello, <strong>{{ user.username }} <i class="bi bi-person text-dark"></i></strong>
-                </span>
-            </div>
+            <!-- Nav Links next to the Brand -->
+            <ul class="navbar-nav flex-row">
+                <li class="nav-item">
+                    <a class="nav-link px-2" href="/">Home</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2" href="/library">Library</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2" href="/profile">Profile</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link px-2" href="/settings">Settings</a>
+                </li>
+            </ul>
         </div>
     </nav>
 
@@ -80,7 +80,7 @@
                                     {% else %}
                                     <span class="me-2">⬜</span>
                                     {% endif %}
-                                    <a href="/questions/{{ question.questionID }}" class = "accordion-link">
+                                    <a href="/questions/{{ question.questionID }}" class="accordion-link">
                                         {{ question.title }}
                                     </a>
                                 </div>
