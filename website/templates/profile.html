@@ -43,8 +43,7 @@
                     <li class="nav-item"><a class="nav-link" href="/settings">Settings</a></li>
                 </ul>
                 <span class="navbar-text">
-                    <a href="/logout" class="btn btn-outline-warning text-white btn-sm me-3">Logout</a>
-                    Hello, <strong>{{ user.username }} <i class="bi bi-person text-dark"></i></strong>
+                        Hello, <strong>{{ user.username }} <i class="bi bi-person text-dark"></i></strong>
                 </span>
             </div>
         </div>
@@ -64,6 +63,11 @@
                         <div class="card-body">
                             <h5 class="card-title">{{ user.username }}</h5>
                             <p class="card-text">{{ user.bio or "A brief bio or summary about the user goes here. Share your passion for coding and your journey!" }}</p>
+                            <div class="d-flex justify-content-end">
+                                <a href="/logout" class="btn btn-warning fw-semibold shadow-sm">
+                                    Logout
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
