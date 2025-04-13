@@ -3,6 +3,12 @@ import pytest
 from flask import json
 from website.models import ABTestAnalytics
 
+@pytest.mark.usefixtures("sample_data")
+def test_analytics_get(client):
+    """Test the /analytics endpoint for a successful GET request."""
+    response = client.get('/analytics')
+    assert response.status_code == 200
+
 def test_track_ab_test(client, app):
     """Test the /track-ab-test endpoint."""
     data = {
