@@ -9,10 +9,13 @@ def get_solved_count(user_id):
     solved = Submission.query.filter_by(userID=user_id, result="Passed").all()
     return len({x.questionID for x in solved})
 
-def get_submissions(user_id):
-    """Returns user's submission history"""
-    submissions = Submission.query.filter_by(userID=user_id)
-    return [[x.questionID, x.result, x.runtime, x.time] for x in submissions]
+def get_user_submissions(user_id):
+    """Get user submissions."""
+    return (Submission.query.filter_by(userID=user_id).order_by(Submission.time.desc()).all())
+
+def get_recent_user_submissions(user_id):
+    """Get user submissions."""
+    return (Submission.query.filter_by(userID=user_id).order_by(Submission.time.desc()).limit(10).all())
 
 def get_successful_submissions(user_id):
     """Returns user's successful submissions"""
@@ -38,7 +41,3 @@ def get_language_count(user_id):
 def get_user_info(user_id):
     """Get user information."""
     return User.query.filter_by(userID=user_id).first()
-
-def get_user_submissions(user_id):
-    """Get user submissions."""
-    return Submission.query.filter_by(userID=user_id).all()

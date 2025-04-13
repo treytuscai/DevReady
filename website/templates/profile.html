@@ -80,7 +80,7 @@
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col">
-                                <h3>{{ user.submissions|length }}</h3>
+                                <h3>{{ total_solved }}</h3>
                                 <p>Problems Solved</p>
                             </div>
                             <div class="col">
@@ -102,7 +102,7 @@
                         <ul class="list-group">
                             <!-- Loop through submissions -->
                             <ul class="list-group">
-                                {% for submission in user.submissions %}
+                                {% for submission in recent_submissions %}
                                 <li class="list-group-item">
                                     Question ID: {{ submission.question.title}} |
                                     Submitted on: {{ submission.time.strftime('%Y-%m-%d %H:%M:%S') }}

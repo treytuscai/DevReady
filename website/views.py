@@ -30,12 +30,12 @@ def profile():
     """Endpoint to get profile page."""
     user_id = current_user.userID
     total_solved = get_solved_count(user_id)
-    submissions = get_user_submissions(user_id)
+    recent_submissions = get_recent_user_submissions(user_id)
     successful_submissions = get_successful_submissions(user_id)
     mastery_score = get_mastery_score(user_id)
     language_stats = get_language_count(user_id)
     return render_template('profile.html', user=current_user, total_solved=total_solved,
-                            mastery_score=mastery_score, submissions=submissions,
+                            mastery_score=mastery_score, recent_submissions=recent_submissions,
                             successful_submissions=successful_submissions, language_stats=language_stats)
 
 @main_blueprint.route('/settings', methods=['GET', 'POST'])
