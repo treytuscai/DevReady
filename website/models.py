@@ -104,3 +104,16 @@ class MasteryScore(db.Model):
 
     user = db.relationship('User', back_populates='mastery_scores')
     tag = db.relationship('Tag', back_populates='mastery_scores')
+
+class ABTestAnalytics(db.Model):
+    """Stores anonymous analytics data for A/B testing and user interactions."""
+    interactionID = db.Column(db.Integer, primary_key=True)
+    questionID = db.Column(db.Integer, db.ForeignKey('question.questionID'), nullable=True)
+
+    group = db.Column(db.String(1), nullable=False)  # 'A' or 'B'
+    usedHint = db.Column(db.Boolean, default=False)
+    timeToSubmit = db.Column(db.Float, nullable=True)  # In seconds
+
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    question = db.relationship('Question', backref='ab_test_analytics')
