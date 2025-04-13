@@ -1,6 +1,8 @@
-from werkzeug.security import check_password_hash
+import pytest
+from flask import session
 from website.models import User
 from website.extensions import db
+from werkzeug.security import check_password_hash
 
 
 def login(client):
@@ -9,7 +11,7 @@ def login(client):
                                        "password": "password123"}, 
                                        follow_redirects=True)
 
-def test_change_email_success(client, app):
+def test_change_email_success(client, app, sample_data):
     """tests a change email success"""
     login(client)
     response = client.post("/newEmail", data=
@@ -21,19 +23,19 @@ def test_change_email_success(client, app):
         user = User.query.filter_by(username="testuser").first()
         assert user.email == "newemail@example.com"
 
-def test_change_email_same_as_current(client):
+def test_change_email_same_as_current(client, app, sample_data):
     """test if the new email is the same as current"""
     login(client)
     response = client.post("/newEmail", data={"email": "test@example.com"}, follow_redirects=True)
     assert b"No changes were made to your email." in response.data
 
-def test_change_email_blank(client):
+def test_change_email_blank(client, app, sample_data):
     """tests if the new email is blank"""
     login(client)
     response = client.post("/newEmail", data={"email": ""}, follow_redirects=True)
     assert b"All fields are required." in response.data
 
-def test_change_password_blank(client):
+def test_change_password_blank(client, app, sample_data):
     """tests if the new password is blank"""
     login(client)
     response = client.post("/newPassword", data={
@@ -44,7 +46,7 @@ def test_change_password_blank(client):
 
     assert b"All fields are required" in response.data
 
-def test_change_email_duplicate(client, app):
+def test_change_email_duplicate(client, app, sample_data):
     """tests if the new email is already used"""
     with app.app_context():
         db.session.add(User(username="other", email="taken@example.com", passwordHash="..."))
@@ -54,7 +56,7 @@ def test_change_email_duplicate(client, app):
     response = client.post("/newEmail", data={"email": "taken@example.com"}, follow_redirects=True)
     assert b"An account with that email already exists." in response.data
 
-def test_change_password_success(client, app):
+def test_change_password_success(client, app, sample_data):
     """tests if he password was changed succesfully"""
     login(client)
     response = client.post("/newPassword", data={
@@ -67,7 +69,7 @@ def test_change_password_success(client, app):
         user = User.query.filter_by(username="testuser").first()
         assert check_password_hash(user.passwordHash, "newpassword123")
 
-def test_change_password_wrong_current(client):
+def test_change_password_wrong_current(client, sample_data):
     """tests if the current password entered is incorrect"""
     login(client)
     response = client.post("/newPassword", data={
@@ -77,7 +79,7 @@ def test_change_password_wrong_current(client):
     }, follow_redirects=True)
     assert b"Current password is incorrect." in response.data
 
-def test_change_password_mismatch(client):
+def test_change_password_mismatch(client, sample_data):
     """tests if the confirm password is different"""
     login(client)
     response = client.post("/newPassword", data={
@@ -87,8 +89,8 @@ def test_change_password_mismatch(client):
     }, follow_redirects=True)
     assert b"New passwords do not match." in response.data
 
-def test_change_password_length_invalid(client):
-    """tests if the new password is not the right length"""
+def test_change_password_length_invalid(client, sample_data):
+    """tests if the new password is not the right"""
     login(client)
     response = client.post("/newPassword", data={
         "current_password": "password",
