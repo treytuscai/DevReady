@@ -9,15 +9,15 @@ def login_test_user(client, test_user):
     client.post("/login", data={"username": "testuser", "password": "password123"})
     return test_user
 
-def test_change_email_success(client, app, login_test_user):
+def test_change_email_success(client):
     response = client.post("/newEmail", data={"email": "new@example.com"}, follow_redirects=True)
     assert b"Your email has been updated successfully." in response.data
 
-def test_change_email_same(client, app, login_test_user):
+def test_change_email_same(client):
     response = client.post("/newEmail", data={"email": "test@example.com"}, follow_redirects=True)
     assert b"No changes were made to your email." in response.data
 
-def test_change_email_duplicate(client, app, login_test_user):
+def test_change_email_duplicate(client, app):
     with app.app_context():
         db.session.add(User(
             username="otheruser",
@@ -29,7 +29,7 @@ def test_change_email_duplicate(client, app, login_test_user):
     response = client.post("/newEmail", data={"email": "duplicate@example.com"}, follow_redirects=True)
     assert b"An account with that email already exists." in response.data
 
-def test_change_password_success(client, app, login_test_user):
+def test_change_password_success(client):
     response = client.post("/newPassword", data={
         "current_password": "password123",
         "new_password": "newsecurepass",
@@ -37,7 +37,7 @@ def test_change_password_success(client, app, login_test_user):
     }, follow_redirects=True)
     assert b"Your password has been updated successfully." in response.data
 
-def test_change_password_mismatch(client, app, login_test_user):
+def test_change_password_mismatch(client):
     response = client.post("/newPassword", data={
         "current_password": "password123",
         "new_password": "abc12345",
@@ -45,7 +45,7 @@ def test_change_password_mismatch(client, app, login_test_user):
     }, follow_redirects=True)
     assert b"New passwords do not match." in response.data
 
-def test_change_password_wrong_current(client, app, login_test_user):
+def test_change_password_wrong_current(client):
     response = client.post("/newPassword", data={
         "current_password": "wrongpassword",
         "new_password": "abc12345",
@@ -53,7 +53,7 @@ def test_change_password_wrong_current(client, app, login_test_user):
     }, follow_redirects=True)
     assert b"Current password is incorrect." in response.data
 
-def test_change_password_invalid_length(client, app, login_test_user):
+def test_change_password_invalid_length(client):
     response = client.post("/newPassword", data={
         "current_password": "password123",
         "new_password": "short",
