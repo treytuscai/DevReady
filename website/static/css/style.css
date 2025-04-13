@@ -433,4 +433,12 @@ footer {
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 50%;
-  }
+}
+
+a {
+    color: #FF7A00; /* or any orange shade you prefer */
+}
+
+a:hover {
+    color: #FFA733; /* a lighter orange on hover */
+}
