@@ -2,7 +2,7 @@
 from flask import Blueprint, render_template
 from flask_login import login_required, current_user
 from .questions import get_next_question, get_all_tags_with_questions, get_all_completed_questions
-from .profile import get_solved_count, get_mastery_score, get_user_submissions, get_successful_submissions, get_language_count
+from .profile import get_solved_count, get_mastery_score, get_user_submissions, get_successful_submissions, get_language_count, get_recent_user_submissions
 
 # Create a blueprint
 main_blueprint = Blueprint('main', __name__)
