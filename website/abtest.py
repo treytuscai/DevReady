@@ -1,3 +1,4 @@
+"""Handles A/B test tracking and data retrieval endpoints."""
 from flask import Blueprint, request, jsonify
 from website.extensions import db
 from website.models import ABTestAnalytics
@@ -6,6 +7,7 @@ ab_blueprint = Blueprint('abtest', __name__)
 
 @ab_blueprint.route('/track-ab-test', methods=['POST'])
 def track_ab_test():
+    """Tracks A/B test data and stores it in the database."""
     data = request.get_json()
 
     new_entry = ABTestAnalytics(
@@ -22,6 +24,7 @@ def track_ab_test():
 
 @ab_blueprint.route('/get-ab-test-data', methods=['GET'])
 def get_ab_test_data():
+    """Retrieves and aggregates A/B test data for analysis."""
     # Query
     results = ABTestAnalytics.query.all()
 
@@ -37,10 +40,10 @@ def get_ab_test_data():
         # Count the hint usage
         if entry.usedHint:
             ai_usage[entry.group] += 1
-        
+
         # Count assignments (total number of submissions) per group
         assignments[entry.group] += 1
-        
+
         # Track hint impact on submission time
         if entry.usedHint:
             if entry.group == 'A':

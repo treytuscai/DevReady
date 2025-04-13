@@ -1,9 +1,8 @@
 """This module contains functional tests for AB testing."""
 import pytest
-from flask import json
 from website.models import ABTestAnalytics
 
-def test_track_ab_test(client, app):
+def test_track_ab_test(client):
     """Test the /track-ab-test endpoint to ensure data is added correctly."""
     data = {
         "questionID": 3,
@@ -13,7 +12,7 @@ def test_track_ab_test(client, app):
     }
 
     # Send a POST request to track A/B test data
-    response = client.post('/track-ab-test', json=data)
+    client.post('/track-ab-test', json=data)
 
     # Check if the data is in the database
     ab_entry = ABTestAnalytics.query.filter_by(questionID=3, group='A').first()
@@ -22,7 +21,7 @@ def test_track_ab_test(client, app):
     assert ab_entry.timeToSubmit == 20
 
 @pytest.mark.usefixtures("sample_data")
-def test_get_ab_test_data(client, app):
+def test_get_ab_test_data(client):
     """Test the /get-ab-test-data endpoint to ensure data is returned correctly."""
     # Send a GET request to fetch A/B test data
     response = client.get('/get-ab-test-data')

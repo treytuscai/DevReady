@@ -1,7 +1,5 @@
 """This module contains unit tests for AB testing."""
 import pytest
-from flask import json
-from website.models import ABTestAnalytics
 
 @pytest.mark.usefixtures("sample_data")
 def test_analytics_get(client):
@@ -9,7 +7,7 @@ def test_analytics_get(client):
     response = client.get('/analytics')
     assert response.status_code == 200
 
-def test_track_ab_test(client, app):
+def test_track_ab_test(client):
     """Test the /track-ab-test endpoint."""
     data = {
         "questionID": 3,
@@ -26,7 +24,7 @@ def test_track_ab_test(client, app):
     assert response.json['status'] == 'success'
 
 @pytest.mark.usefixtures("sample_data")
-def test_get_ab_test_data(client, app):
+def test_get_ab_test_data(client):
     """Test the /get-ab-test-data endpoint."""
     # Send a GET request to fetch A/B test data
     response = client.get('/get-ab-test-data')
