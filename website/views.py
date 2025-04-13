@@ -44,3 +44,9 @@ def profile():
 def settings():
     """Endpoint to get settings page."""
     return render_template('settings.html', user=current_user)
+
+@main_blueprint.route('/analytics', methods=['GET', 'POST'])
+@login_required
+def analytics():
+    """Endpoint to get settings page."""
+    return render_template('analytics.html')
