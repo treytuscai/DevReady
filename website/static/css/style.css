@@ -304,6 +304,10 @@ footer {
     font-weight: 700;
 }
 
+.card-header {
+    border-bottom: 1px solid rgba(211, 211, 211, 0.6);
+}
+
 /* Accordion Container */
 .accordion {
     background-color: #1E1E1E;
@@ -435,10 +439,32 @@ footer {
     border-radius: 50%;
 }
 
+.submission-list {
+    background-color: #1A1A1A;
+    color: white;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.submission-item {
+    background-color: #1A1A1A;
+    color: white;
+    border: none;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.submission-item:last-child {
+    border-bottom: none;
+}
+
+.submission-item small.text-muted {
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
 a {
-    color: #FF7A00; /* or any orange shade you prefer */
+    color: #FF7A00;
 }
 
 a:hover {
-    color: #FFA733; /* a lighter orange on hover */
+    color: #FFA733;
 }
