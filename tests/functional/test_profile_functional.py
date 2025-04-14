@@ -1,13 +1,13 @@
 import pytest
 from website.profile import (
     get_solved_count,
-    get_submissions,
     get_successful_submissions,
     get_mastery_score,
     get_badges,
     get_language_count,
     get_user_info,
-    get_user_submissions
+    get_user_submissions,
+    get_recent_user_submissions
 )
 from website.models import User
 
@@ -17,14 +17,6 @@ def test_get_solved_count(sample_data, app):
         user = User.query.filter_by(username="testuser").first()
         solved_count = get_solved_count(user.userID)
         assert solved_count == 1 
-
-def test_get_submissions(sample_data, app):
-    """Test the get_submissions function."""
-    with app.app_context():
-        user = User.query.filter_by(username="testuser").first()
-        submissions = get_submissions(user.userID)
-        assert len(submissions) == 1
-        assert submissions[0][1] == "Passed"
 
 def test_get_successful_submissions(sample_data, app):
     """Test the get_successful_submissions function."""
@@ -67,5 +59,13 @@ def test_get_user_submissions(sample_data, app):
     with app.app_context():
         user = User.query.filter_by(username="testuser").first()
         user_submissions = get_user_submissions(user.userID)
+        assert len(user_submissions) == 1
+        assert user_submissions[0].result == "Passed"
+
+def test_get_recent_user_submissions(sample_data, app):
+    """Test the get_user_submissions function."""
+    with app.app_context():
+        user = User.query.filter_by(username="testuser").first()
+        user_submissions = get_recent_user_submissions(user.userID)
         assert len(user_submissions) == 1
         assert user_submissions[0].result == "Passed"

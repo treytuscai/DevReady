@@ -10,6 +10,7 @@ from .code_execution import code_exec_blueprint
 from .ai_helper import ai_helper_blueprint
 from .questions import questions_blueprint
 from .settings import settings_blueprint
+from .abtest import ab_blueprint
 from .models import User
 from .extensions import db
 
@@ -44,6 +45,7 @@ def create_app(test_config=None):
     app.register_blueprint(ai_helper_blueprint)
     app.register_blueprint(questions_blueprint)
     app.register_blueprint(settings_blueprint)
+    app.register_blueprint(ab_blueprint)
 
     with app.app_context():
         db.create_all()
