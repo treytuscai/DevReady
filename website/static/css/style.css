@@ -434,3 +434,49 @@ footer {
     object-fit: cover;
     border-radius: 50%;
   }
+
+.modal-content {
+    background-color: #1A1A1A;
+    color: #EAEAEA;
+    border: none;
+    border-radius: 8px;
+}
+
+.modal-header {
+    border-bottom: 1px solid #333;
+}
+
+.modal-title {
+    font-family: 'Poppins', sans-serif;
+    font-weight: 700;
+    color: #FF7A00;
+}
+
+.modal-body {
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+    color: #EAEAEA;
+}
+
+.modal-footer {
+    border-top: 1px solid #333;
+}
+
+.btn-close {
+    filter: invert(1);
+}
+
+.modal-footer .btn {
+    background-color: #FF7A00;
+    color: #121212;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.modal-footer .btn:hover {
+    background-color: #FFA94D;
+}
+
+.spinner-border.text-primary {
+    color: #FF7A00 !important;
+}

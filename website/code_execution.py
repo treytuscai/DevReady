@@ -38,9 +38,9 @@ def execute_code_with_test(code, test_input, expected_method, language):
         "timeout": 5
     }
 
-    print(f"Sending payload to code executor with language: {payload['language']}")
-    print(f"Code snippet length: {len(payload['code'])} chars")
-    print(f"Full code: {payload['code']}")
+    # print(f"Sending payload to code executor with language: {payload['language']}")
+    # print(f"Code snippet length: {len(payload['code'])} chars")
+    # print(f"Full code: {payload['code']}")
 
     try:
         response = requests.post(
@@ -101,7 +101,7 @@ def run_tests(code, test_cases, expected_method, language):
     all_passed = True
 
     for test in test_cases:
-        print("THis is the test: ", test)
+        # print("THis is the test: ", test)
         execution_result = execute_code_with_test(code, test.inputData, expected_method, language)
         output = execution_result["output"]  # Extract function output
         try:
@@ -111,6 +111,9 @@ def run_tests(code, test_cases, expected_method, language):
             # If not valid JSON, use the raw string value
             expected = test.expectedOutput
         passed = output == expected
+        print("Passed: ", passed)
+        print("Output: ", output)
+        print("Expected: ", expected)
 
         results.append({
             "passed": passed,
@@ -414,9 +417,9 @@ def execute_typescript_as_javascript(code, test_input, expected_method):
     # 7. Remove non-null assertions (e.g., "variable!")
     js_code = re.sub(r'([a-zA-Z0-9_$\.\(\)\[\]]+)!', r'\1', js_code)
 
-    print("Converted TypeScript to JavaScript:")
-    snippet_preview = js_code[:200] + "..." if len(js_code) > 200 else js_code
-    print(snippet_preview)
+    # print("Converted TypeScript to JavaScript:")
+    # snippet_preview = js_code[:200] + "..." if len(js_code) > 200 else js_code
+    # print(snippet_preview)
 
     # Now wrap the stripped code in our standard JavaScript test runner:
     return format_javascript(js_code, test_input, expected_method)
