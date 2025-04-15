@@ -1,7 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const editor = ace.edit("editor");
     editor.getSession().setMode("ace/mode/python");
-    editor.setTheme("ace/theme/dracula");
+    editor.setTheme("ace/theme/vibrant_ink");
 
     const template = document.getElementById("editor").dataset.template;
 

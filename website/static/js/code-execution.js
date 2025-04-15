@@ -62,12 +62,12 @@ function displayRunResults(results) {
         if (i < buttons.length) {
             const btn = buttons[i];
             btn.className = test.passed ? "btn btn-success" : "btn btn-danger";
-            btn.onclick = () => showTestCase(test.stderr, test.input, test.stdout, test.output, test.expected, btn);
+            btn.onclick = () => showTestCase(test.stderr, test.input, test.stdout, test.output, test.expected, btn, false);
         }
     });
 
     // Automatically show the first test case result
-    showTestCase(results[0].stderr, results[0].input, results[0].stdout, results[0].output, results[0].expected, buttons[0]);
+    showTestCase(results[0].stderr, results[0].input, results[0].stdout, results[0].output, results[0].expected, buttons[0], false);
 }
 
 //displays results of submission to user
@@ -76,33 +76,62 @@ function displaySubmissionResults(results) {
     const testCaseButtons = document.getElementById('test-case-buttons');
     const testCaseStatus = document.getElementById('test-case-status');
 
-    // Clear the right side first
+    // Clear the right side
     testCaseStatus.innerHTML = "";
 
     const passedCases = results.filter(test => test.passed).length;
     const totalCases = results.length;
 
     if (passedCases === totalCases) {
-        //If all test cases passed, remove test case buttons
-        testCaseButtons.innerHTML = "";
 
-        //Display pass message
-        const passMessage = document.createElement('span');
-        passMessage.style.color = "green";
-        passMessage.textContent = `Successful submission! ${passedCases}/${totalCases} test cases passed`;
-        testCaseButtons.appendChild(passMessage);
+        const testCaseStatus = document.getElementById('test-case-status');
+        testCaseStatus.innerHTML = "";
 
-        //Display analyze button
+        // Outer container with flexbox layout
+        const rowDiv = document.createElement('div');
+
+        rowDiv.classList.add('d-flex', 'align-items-center', 'justify-content-between', 'gap-4');
+
+        // Left container
+        const leftDiv = document.createElement('div');
+
+        // "Successful submission!" text
+        const successMessage = document.createElement('div');
+        successMessage.style.color = "#00c851";
+        successMessage.style.fontFamily = "Inter, sans-serif";
+        successMessage.style.fontWeight = "600";
+        successMessage.textContent = "Successful submission!";
+        leftDiv.appendChild(successMessage);
+
+        // "n/n test cases passed" text
+        const passMessage = document.createElement('div');
+        passMessage.style.color = "#00c851"; 
+        passMessage.style.fontFamily = "Inter, sans-serif";
+        passMessage.style.fontWeight = "600";
+        passMessage.textContent = `${passedCases}/${totalCases} test cases passed`;
+        leftDiv.appendChild(passMessage);
+
+        // Right container
+        const rightDiv = document.createElement('div');
+
+        // Analyze button
         const analyzeBtn = document.createElement('button');
         analyzeBtn.id = 'analyze-btn';
         analyzeBtn.className = 'btn btn-submit';
-        analyzeBtn.style.marginLeft = "1rem";
         analyzeBtn.textContent = 'Analyze Time Complexity';
         analyzeBtn.onclick = analyzeTimeComplexity;
         analyzeBtn.setAttribute('data-bs-toggle', 'modal');
         analyzeBtn.setAttribute('data-bs-target', '#complexityModal');
-        testCaseButtons.appendChild(analyzeBtn);
+        rightDiv.appendChild(analyzeBtn);
 
+        // Append left and right divs into rowDiv
+        rowDiv.appendChild(leftDiv);
+        rowDiv.appendChild(rightDiv);
+
+        // Add rowDiv to testCaseStatus
+        testCaseStatus.appendChild(rowDiv);
+
+        //Create complexity modal if doesn't yet exist
         if (!document.getElementById('complexityModal')) {
             createComplexityModal();
         }
@@ -110,6 +139,8 @@ function displaySubmissionResults(results) {
         //Keep test case buttons if failed submissions
         const failMessage = document.createElement('span');
         failMessage.style.color = "red";
+        failMessage.style.fontFamily = "Inter, sans-serif";
+        failMessage.style.fontWeight = "600";
         failMessage.textContent = `${passedCases}/${totalCases} test cases passed`;
         testCaseStatus.appendChild(failMessage);
 
@@ -129,7 +160,8 @@ function displaySubmissionResults(results) {
                 results[0].stdout,
                 results[0].output,
                 results[0].expected,
-                buttons[0]
+                buttons[0],
+                false
             );
         }
     }
@@ -151,7 +183,7 @@ function createComplexityModal() {
                     <h5 class="modal-title" id="complexityModalLabel">Time Complexity Analysis</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body" id="complexity-modal-body">
+                <div class="modal-body" id="complexity-modal-body" style="font-family: Inter, sans-serif;">
                     <div class="d-flex justify-content-center">
                         <div class="simple-spinner"></div>
                     </div>
@@ -205,16 +237,16 @@ async function analyzeTimeComplexity() {
 
         //Display the analysis result in modal
         modalBody.innerHTML = `
-            <div class="mb-3">
+            <div class="mb-3" style="font-family: Inter, sans-serif;">
                 <span class="fw-bold">Time Complexity:</span> 
                 <span>${result.analysis.timeComplexity || 'Not determined'}</span>
             </div>
-            <div class="mb-3">
+            <div class="mb-3" style="font-family: Inter, sans-serif;">
                 <span class="fw-bold">Space Complexity:</span>
                 <span>${result.analysis.spaceComplexity || 'Not determined'}</span>
             </div>
             ${result.analysis.explanation ? `
-                <div class="mt-4">
+                <div class="mt-4" style="font-family: Inter, sans-serif;">
                     <h6 class="fw-bold">Explanation:</h6>
                     <div class="p-3 bg-light border rounded">${result.analysis.explanation}</div>
                 </div>` : ''}
@@ -222,7 +254,7 @@ async function analyzeTimeComplexity() {
 
     } catch (error) {
         modalBody.innerHTML = `
-            <div class="alert alert-danger">
+            <div class="alert alert-danger" style="font-family: Inter, sans-serif;">
                 <strong>Error:</strong> Could not analyze time complexity.
                 <div class="mt-2">${error.message}</div>
             </div>
@@ -246,7 +278,6 @@ function showTestCase(stderr, input, stdout, output, expected, activeButton, ini
 
     //Output block and text
     const outputContainer = document.getElementById('output-container');
-    outputContainer.style.display = "block";
     const outputText = document.getElementById('output-text');
 
     //Update button styles
@@ -271,15 +302,54 @@ function showTestCase(stderr, input, stdout, output, expected, activeButton, ini
     // Handle print statements
     if (stdout) {
         stdoutContainer.style.display = "block";
-        stdoutText.innerHTML = `<pre>${stdout.join("\n")}</pre>`;
-    } else {
+        stdoutText.innerHTML = `<pre>${formatOutput(stdout)}</pre>`;
+    } else if (!initial) {
         stdoutContainer.style.display = "none";
     }
 
+    // Only display output container when there's actual output to show
     if (!initial) {
-        outputContainer.style.display = "block";
-        outputText.innerHTML = output
+        outputContainer.style.display = "block"; // Show stdout box
+        outputText.innerHTML = formatOutput(output);
     } else {
-        outputContainer.style.display = "none";
+        outputContainer.style.display = "none"; // Hide output box if null or undefined
+    }
+}
+
+// Auto-select the first test case when page loads
+document.addEventListener('DOMContentLoaded', function () {
+    const testButtons = document.querySelectorAll("#test-case-buttons button");
+    if (testButtons.length > 0) {
+        const firstButton = testButtons[0];
+        if (typeof firstButton.onclick === 'function') {
+            firstButton.onclick();
+        }
+    }
+});
+
+function formatOutput(value) {
+    // Handle complex numbers (convert to string)
+    if (typeof value === 'string' && value.includes('j')) {
+        return `"${value}"`; // Handle complex numbers as string (e.g., "3+4j")
+    }
+
+    // Handle string values
+    if (typeof value === 'string') {
+        return `"${value}"`; // Wrap string in quotes
+    }
+
+    // Handle arrays
+    else if (Array.isArray(value)) {
+        return `[${value.map(formatOutput).join(', ')}]`; // Wrap array in brackets
+    }
+
+    // Handle null values
+    else if (value === null) {
+        return 'null'; // Display null as is
+    }
+
+    // Handle other types (numbers, booleans, etc.)
+    else {
+        return String(value);
     }
 }

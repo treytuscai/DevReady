@@ -1,8 +1,23 @@
+/* Font Face Declarations */
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/InterReg.ttf') format('truetype');
+    font-weight: 400;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Inter';
+    src: url('../fonts/Inter_24pt-SemiBold.ttf') format('truetype');
+    font-weight: 600;
+    font-style: normal;
+}
+
 /* Global Font */
 body {
     font-family: 'Inter', sans-serif;
     font-weight: 400;
-    color: #EAEAEA; /* Light text for dark mode */
+    color: #EAEAEA;
 }
 
 /* Headings */
@@ -185,7 +200,7 @@ body {
 
 /* Buttons */
 .btn-custom {
-    background: linear-gradient(90deg, #FF7A00, #FF9900);
+    background: linear-gradient(90deg, #FF7A00, #FF7A00);
     color: white;
     border: none;
     transition: 0.1s ease-in-out;
@@ -204,9 +219,10 @@ body {
     background-color: #1a1a1a;
     color: #ccc;
     border: 1px solid #444;
-    /* padding: 8px 16px; */
+    padding: 8px 16px;
     border-radius: 6px;
-    font-family: 'Inter', sans-serif;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -237,7 +253,7 @@ body {
 }
 
 .btn-submit {
-    background: linear-gradient(90deg, #FF9900, #FF7A00);
+    background: linear-gradient(90deg, #FF7A00, #FF7A00);
     color: #121212;
     font-weight: bold;
     border: none;
@@ -293,7 +309,14 @@ footer {
 
 .card {
     color: #EAEAEA;
-    border: 1px solid orange; /* Subtle orange border */
+    border: 1px solid silver; /* Subtle silver border */
+    border-radius: 12px;
+    z-index: 2;
+}
+
+.code-card {
+    color: #EAEAEA;
+    border: 1px solid #FF7A00; /* Subtle orange border */
     border-radius: 12px;
     z-index: 2;
 }
@@ -313,7 +336,7 @@ footer {
 /* Accordion Items */
 .accordion-item {
     background-color: #1A1A1A;
-    border: 1px solid orange;
+    border: 1px solid #FF7A00;
 }
 
 /* Header Button */
@@ -433,8 +456,10 @@ footer {
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 50%;
-  }
+}
 
+
+/* modal styling */
 .modal-content {
     background-color: #1A1A1A;
     color: #EAEAEA;
@@ -477,6 +502,7 @@ footer {
     background-color: #FFA94D;
 }
 
+/* spinner color */
 .spinner-border.text-primary {
     color: #FF7A00 !important;
 }

@@ -76,7 +76,7 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-dark" style="border-bottom: 1px solid orange;">
+    <nav class="navbar navbar-dark" style="border-bottom: 1px solid #FF7A00;">
         <div class="container d-flex justify-content-start align-items-center">
             <!-- Brand -->
             <a class="navbar-brand d-flex align-items-center me-3" href="/">
@@ -187,7 +187,7 @@
 
             <!-- Code Interpreter Section -->
             <div class="col-md-8">
-                <div class="card mb-2">
+                <div class="card code-card mb-2">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="m-0">Code</h5>
 
@@ -224,7 +224,7 @@
                             <div id="test-case-buttons" class="d-flex flex-wrap gap-2">
                                 {% for sample_test in sample_tests %}
                                 <button class="btn-testcase" 
-                                        onclick="showTestCase(..., this)">
+                                        onclick="showTestCase('{{ sample_test.stderr }}', '{{ sample_test.inputData }}', '{{ sample_test.stdout }}', '{{ sample_test.output }}', '{{ sample_test.expectedOutput }}', this, true)">
                                     Case {{ loop.index }}
                                 </button>
                                 {% endfor %}
