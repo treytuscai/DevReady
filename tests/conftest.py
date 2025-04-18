@@ -3,7 +3,7 @@ import pytest
 from datetime import datetime
 from werkzeug.security import generate_password_hash
 from website import create_app, db
-from website.models import User, Tag, Question, QuestionTag, TestCase, MasteryScore, Submission
+from website.models import User, Tag, Question, QuestionTag, TestCase, MasteryScore, Submission, ABTestAnalytics
 
 @pytest.fixture
 def app():
@@ -93,6 +93,21 @@ def sample_data(client, app):
             time=datetime.utcnow()
         )
         db.session.add(submission1)
+        db.session.commit()
+
+        entry1 = ABTestAnalytics(
+            questionID=1,
+            group='A',
+            usedHint=True,
+            timeToSubmit=15
+        )
+        entry2 = ABTestAnalytics(
+            questionID=2,
+            group='B',
+            usedHint=False,
+            timeToSubmit=10
+        )
+        db.session.add_all([entry1, entry2])
         db.session.commit()
 
         yield

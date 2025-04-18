@@ -17,7 +17,6 @@
     window.dataLayer = window.dataLayer || [];
     function gtag() { dataLayer.push(arguments); }
     gtag('js', new Date());
-
     gtag('config', 'G-VL5DJ1Z64V');
 </script>
 
@@ -56,15 +55,15 @@
             <div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card border-0">
-                        <img src="{{ url_for('static', filename='default_profile.png') }}" 
-                            class="profile-img card-img-top rounded-circle mx-auto d-block img-fluid"
-                            style="width: 250px;"
-                            alt="Profile Picture">
+                        <img src="{{ url_for('static', filename='default_profile.png') }}"
+                            class="profile-img card-img-top rounded-circle mx-auto d-block img-fluid mt-2"
+                            style="width: 250px;" alt="Profile Picture">
                         <div class="card-body">
                             <h5 class="card-title">{{ user.username }}</h5>
-                            <p class="card-text">{{ user.bio or "A brief bio or summary about the user goes here. Share your passion for coding and your journey!" }}</p>
-                            <div class="d-flex justify-content-end">
-                                <a href="/logout" class="btn btn-warning fw-semibold shadow-sm">
+                            <p class="card-text">{{ user.bio or "A brief bio or summary about the user goes here. Share
+                                your passion for coding and your journey!" }}</p>
+                            <div class="d-flex justify-content-center">
+                                <a href="/logout" class="btn btn-submit fw-semibold shadow-sm">
                                     Logout
                                 </a>
                             </div>
@@ -75,13 +74,13 @@
             <!-- Stats and Activity Section -->
             <div class="col-md-8">
                 <div class="card mb-4">
-                    <div class="card-header">
+                    <div class="card-header mt-2">
                         <h5>Your Stats</h5>
                     </div>
                     <div class="card-body">
                         <div class="row text-center">
                             <div class="col">
-                                <h3>{{ user.submissions|length }}</h3>
+                                <h3>{{ total_solved }}</h3>
                                 <p>Problems Solved</p>
                             </div>
                             <div class="col">
@@ -96,25 +95,32 @@
                     </div>
                 </div>
                 <div class="card">
-                    <div class="card-header">
+                    <div class="card-header mt-2">
                         <h5>Recent Activity</h5>
                     </div>
                     <div class="card-body">
-                        <ul class="list-group">
+                        <div class="list-group submission-list">
                             <!-- Loop through submissions -->
-                            <ul class="list-group">
-                                {% for submission in user.submissions %}
-                                <li class="list-group-item">
-                                    Question ID: {{ submission.question.title}} |
-                                    Submitted on: {{ submission.time.strftime('%Y-%m-%d %H:%M:%S') }}
-                                    Language: {{ submission.language }}
-                                    Result: {{ submission.result }}
-                                </li>
-                                {% else %}
-                                <li class="list-group-item">No submissions yet.</li>
-                                {% endfor %}
-                            </ul>
-                        </ul>
+                            {% for submission in recent_submissions %}
+                            <div
+                                class="list-group-item d-flex justify-content-between align-items-center submission-item">
+                                <div class="d-flex flex-column">
+                                    <strong>Question:</strong> {{ submission.question.title }}
+                                    <small class="text-muted">Submitted on: {{ submission.time.strftime('%Y-%m-%d
+                                        %H:%M:%S') }}</small>
+                                </div>
+                                <div class="d-flex flex-column align-items-end">
+                                    <span class="badge bg-white text-black mb-2">{{ submission.language }}</span>
+                                    <span
+                                        class="badge bg-{{ 'success' if submission.result == 'Passed' else 'danger' }} text-white">
+                                        {{ submission.result }}
+                                    </span>
+                                </div>
+                            </div>
+                            {% else %}
+                            <div class="list-group-item submission-item">No submissions yet.</div>
+                            {% endfor %}
+                        </div>
                     </div>
                 </div>
             </div>
