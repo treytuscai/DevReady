@@ -222,7 +222,10 @@ stderr_buffer = StringIO()
 
 with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
     try:
-        result = sol.{expected_method}(**input_data)
+        if isinstance(input_data, dict):
+            result = sol.{expected_method}(**input_data)
+        else:
+            result = sol.{expected_method}(input_data)
     except Exception as e:
         print(f"{{type(e).__name__}}: {{str(e)}}", file=sys.stderr)
         result = None
