@@ -292,7 +292,7 @@ function showTestCase(stderr, input, stdout, output, expected, activeButton, ini
     if (stderr) {
         outputContainer.style.display = "none";
         stdoutContainer.style.display = "none";
-        stderrText.innerHTML = `<pre style="color: red">${stderr}</pre>`;
+        stderrText.innerHTML = stderr;
         stderrContainer.style.display = "block";
         return;
     } else {
@@ -302,7 +302,7 @@ function showTestCase(stderr, input, stdout, output, expected, activeButton, ini
     // Handle print statements
     if (stdout) {
         stdoutContainer.style.display = "block";
-        stdoutText.innerHTML = `<pre>${formatOutput(stdout)}</pre>`;
+        stdoutText.innerHTML = formatOutput(stdout);
     } else if (!initial) {
         stdoutContainer.style.display = "none";
     }
