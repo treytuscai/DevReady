@@ -13,7 +13,6 @@ CODE_EXECUTOR_URL = "https://code-runner-new.livelypebble-17c142a1.eastus.azurec
 
 def execute_code_with_test(code, test_input, expected_method, language):
     """Runs code on a given test input and returns stdout, stderr, and the function result."""
-    print("language: ", language)
     if language == "python":
         full_code = format_python(code, test_input, expected_method)
     elif language == "javascript":
@@ -38,9 +37,6 @@ def execute_code_with_test(code, test_input, expected_method, language):
         "timeout": 5
     }
 
-    print(f"Sending payload to code executor with language: {payload['language']}")
-    print(f"Code snippet length: {len(payload['code'])} chars")
-    print(f"Full code: {payload['code']}")
 
     try:
         response = requests.post(
@@ -60,7 +56,6 @@ def execute_code_with_test(code, test_input, expected_method, language):
         # Parse the response
         result = response.json()
         output_text = result.get("output", "")
-        print(f"Raw output from executor: {output_text[:100]}")
 
         # Try to extract our formatted result
         try:
@@ -101,7 +96,6 @@ def run_tests(code, test_cases, expected_method, language):
     all_passed = True
 
     for test in test_cases:
-        print("THis is the test: ", test)
         execution_result = execute_code_with_test(code, test.inputData, expected_method, language)
         output = execution_result["output"]  # Extract function output
         try:
@@ -120,11 +114,6 @@ def run_tests(code, test_cases, expected_method, language):
             "stdout": execution_result.get("stdout", []),
             "stderr": execution_result.get("stderr", [])
         })
-        print("Test Input:", test.inputData)
-        print("Expected Output:", test.expectedOutput)
-        print("Actual Output:", output)
-        print("Test Passed:", passed)
-        print("Full Results:", results)
 
         if not passed:
             all_passed = False
@@ -250,7 +239,6 @@ def format_javascript(code, test_input, expected_method):
     """Format JavaScript submission to handle multiple JS function definition patterns."""
 
     js_input = json.dumps(test_input)
-    print("js_input: ", js_input)
     
     # Add special handling for common problem types
     function_call_block = ""
@@ -413,10 +401,6 @@ def execute_typescript_as_javascript(code, test_input, expected_method):
     js_code = re.sub(r'\s+as\s+[a-zA-Z0-9_$<>\[\],\s|&{}]+', '', js_code)
     # 7. Remove non-null assertions (e.g., "variable!")
     js_code = re.sub(r'([a-zA-Z0-9_$\.\(\)\[\]]+)!', r'\1', js_code)
-
-    print("Converted TypeScript to JavaScript:")
-    snippet_preview = js_code[:200] + "..." if len(js_code) > 200 else js_code
-    print(snippet_preview)
 
     # Now wrap the stripped code in our standard JavaScript test runner:
     return format_javascript(js_code, test_input, expected_method)

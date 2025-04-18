@@ -1,10 +1,22 @@
-document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
     const editor = ace.edit("editor");
     editor.getSession().setMode("ace/mode/python");
-    editor.setTheme("ace/theme/dracula");
+    editor.setTheme("ace/theme/vibrant_ink");
+
     const template = document.getElementById("editor").dataset.template;
-    if (template) editor.setValue(template, -1);
-  
+
+    // Function to decode HTML entities
+    function decodeHTMLEntities(text) {
+        const textarea = document.createElement("textarea");
+        textarea.innerHTML = text;
+        return textarea.value;
+    }
+
+    if (template) {
+        const decodedTemplate = decodeHTMLEntities(template);
+        editor.setValue(decodedTemplate, -1);
+    }
+
     editor.setOptions({
         fontSize: "14px",
         showPrintMargin: false,
@@ -18,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
     editor.session.setValue(templates.python || "");
     editor.session.setMode("ace/mode/python");
 
-    languageSelect.addEventListener("change", function(e) {
+    languageSelect.addEventListener("change", function (e) {
         const lang = e.target.value;
         editor.session.setValue(templates[lang] || "");
 
