@@ -34,7 +34,6 @@ def get_question_by_id(question_id):
             return jsonify({"error": "Question not found"}), 404
         sample_tests = [test for test in question.testCases if test.isSample]
         acceptance_rate = get_acceptance_rate(question_id)
-        print("The acceptance rate is: ", acceptance_rate)
 
         return render_template('question.html',
                              question=question,
