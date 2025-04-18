@@ -33,19 +33,14 @@ def get_question_by_id(question_id):
         if not question:
             return jsonify({"error": "Question not found"}), 404
         sample_tests = [test for test in question.testCases if test.isSample]
-
-        total_submissions = Submission.query.filter_by(questionID=question_id).count()
-        successful_submissions = Submission.query.filter_by(
-            questionID=question_id, result="Passed"
-        ).count()
-        success_rate = round((successful_submissions / total_submissions * 100)
-                           if total_submissions > 0 else 0)
+        acceptance_rate = get_acceptance_rate(question_id)
+        print("The acceptance rate is: ", acceptance_rate)
 
         return render_template('question.html',
                              question=question,
                              sample_tests=sample_tests,
-                             success_rate=success_rate,
-                             user=current_user)
+                             user=current_user,
+                             acceptance_rate=acceptance_rate)
     except Exception as e:
         return jsonify({"error": "Failed to fetch question", "details": str(e)}), 500
 
@@ -135,3 +130,12 @@ def get_all_completed_questions(user_id):
     )
     completed_question_ids = {qid[0] for qid in completed_question_ids}
     return completed_question_ids
+
+
+def get_acceptance_rate(question_id):
+    """Get the acceptance rate of a given question."""
+    total_submissions = Submission.query.filter_by(questionID=question_id).count()
+    successful_submissions = Submission.query.filter_by(
+        questionID=question_id, result="Passed"
+    ).count()
+    return round((successful_submissions / total_submissions * 100) if total_submissions > 0 else 0)
