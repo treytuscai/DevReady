@@ -160,8 +160,8 @@ def test_execute_code_with_test_non_json_output(mock_requests_post):
     result = execute_code_with_test(code, "123", "testMethod", "python")
 
     assert result["output"] is None
-    assert result["stdout"] == ["This is not valid JSON"]
-    assert result["stderr"] is None 
+    assert result["stdout"] is None
+    assert result["stderr"] == ["This is not valid JSON"]
 
 def test_run_tests_all_passed():
     """
