@@ -239,13 +239,13 @@ def format_javascript(code, test_input, expected_method):
     """Format JavaScript submission to handle multiple JS function definition patterns."""
 
     js_input = json.dumps(test_input)
-    
+
     # Add special handling for common problem types
     function_call_block = ""
-    
+
     try:
         input_data = json.loads(test_input)
-        
+
         if isinstance(input_data, dict):
             # TwoSum (#1)
             if expected_method.lower() == "twosum" and "nums" in input_data and "target" in input_data:
@@ -256,7 +256,7 @@ def format_javascript(code, test_input, expected_method):
                     const solution = new Solution();
                     result = solution.twoSum(input.nums, input.target);
                 }}"""
-                
+
             # FindMedianSortedArrays (#4)
             elif expected_method.lower() == "findmediansortedarrays" and "nums1" in input_data and "nums2" in input_data:
                 function_call_block = f"""
@@ -266,7 +266,7 @@ def format_javascript(code, test_input, expected_method):
                     const solution = new Solution();
                     result = solution.findMedianSortedArrays(input.nums1, input.nums2);
                 }}"""
-                
+ 
             # ZigZag Conversion (#6)
             elif expected_method.lower() == "convert" and "s" in input_data and "numRows" in input_data:
                 function_call_block = f"""
@@ -276,7 +276,7 @@ def format_javascript(code, test_input, expected_method):
                     const solution = new Solution();
                     result = solution.convert(input.s, input.numRows);
                 }}"""
-                
+
             # Regular Expression Matching (#10)
             elif expected_method.lower() == "ismatch" and "s" in input_data and "p" in input_data:
                 function_call_block = f"""
@@ -286,7 +286,7 @@ def format_javascript(code, test_input, expected_method):
                     const solution = new Solution();
                     result = solution.isMatch(input.s, input.p);
                 }}"""
-                
+
             # 3Sum Closest (#16)
             elif expected_method.lower() == "threesumclosest" and "nums" in input_data and "target" in input_data:
                 function_call_block = f"""
@@ -298,7 +298,6 @@ def format_javascript(code, test_input, expected_method):
                 }}"""
     except:
         pass
-            
             # If we didn't set a special function call block, use the default behavior
     if not function_call_block:
         function_call_block = f"""
@@ -312,7 +311,7 @@ def format_javascript(code, test_input, expected_method):
         else if (typeof {expected_method}Solution === 'function') {{
             result = {expected_method}Solution(input);
         }}"""
-    
+
     formatted_code = f"""
 // User submitted code:
 {code}
@@ -333,7 +332,7 @@ def format_javascript(code, test_input, expected_method):
         stderr_capture = e.toString();
         result = null;
     }}
-    
+
     console.log(JSON.stringify({{
         result: result,
         stdout: stdout_capture,
@@ -342,8 +341,6 @@ def format_javascript(code, test_input, expected_method):
 }})();
 """
     return formatted_code
-
-
 
 def execute_typescript_as_javascript(code, test_input, expected_method):
     """

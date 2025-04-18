@@ -33,7 +33,7 @@ def test_execute_code_with_invalid_input(mock_post):
         'json': lambda self: {"output": json.dumps({"result": None, "stdout": None, "stderr": ["Error: Method not found"]})}
     })()
     mock_post.return_value = mock_response
-    
+
     code = """class Solution:
     def number(self, num: int) -> int:
         return num"""
@@ -56,7 +56,7 @@ def test_execute_code_with_non_serializable_output(mock_post):
         'json': lambda self: {"output": json.dumps({"result": [5, 2, 3], "stdout": None, "stderr": None})}
     })()
     mock_post.return_value = mock_response
-    
+
     code = """class Solution:
     def number(self, num: int) -> int:
         return deque([num, 2, 3])"""

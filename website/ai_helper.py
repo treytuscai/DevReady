@@ -79,12 +79,12 @@ def analyze_submission():
         "user_space_complexity: [space complexity] ,"
         "optimal_space_complexity: [optimal space complexity]}"
     )
-    
+
     user_prompt = (
         f"I solved a Leetcode question with this description: '{question_description}'. Can you analyze my solution's "
         f"time/space complexity and compare it to the optimal one? Here is my code:\n{code}"
     )
-    
+
     analysis, error = generate_response(system_prompt, user_prompt)
 
     if error:
@@ -95,16 +95,16 @@ def analyze_submission():
         # Find the first { and last }
         start_idx = analysis.find('{')
         end_idx = analysis.rfind('}') + 1
-        
+
         if start_idx == -1 or end_idx == 0:
             return jsonify({"success": False, "error": "Invalid JSON response format"}), 500
-            
+
         # Extract just the JSON portion
         json_str = analysis[start_idx:end_idx]
-        
+
         # Parse the JSON to validate and get the complexities
         complexity_data = json.loads(json_str)
-        
+
         # Format response for frontend
         response = {
             "timeComplexity": complexity_data.get("user_time_complexity", "Unknown"),
@@ -120,4 +120,3 @@ def analyze_submission():
     except Exception as e:
         return jsonify({"success": False, "error": f"Error processing analysis: {str(e)}"}), 500
     return jsonify({"success": True, "analysis": response})
-
