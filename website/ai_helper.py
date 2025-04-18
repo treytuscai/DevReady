@@ -62,10 +62,10 @@ def analyze_submission():
     """Analyzes submitted code, providing time/space complexity"""
     data = request.get_json()
     code = data.get("code")
-    question_title = data.get("question")
+    question_description = data.get("question_description")
 
-    if not question_title or not code:
-        return jsonify({"success": False, "error": "Missing question title or code"}), 400
+    if not question_description or not code:
+        return jsonify({"success": False, "error": "Missing question description or code"}), 400
 
     system_prompt = (
         "You are a CS professor specializing in algorithms."
@@ -81,7 +81,7 @@ def analyze_submission():
     )
     
     user_prompt = (
-        f"I solved the Leetcode question '{question_title}'. Can you analyze my solution's "
+        f"I solved a Leetcode question with this description: '{question_description}'. Can you analyze my solution's "
         f"time/space complexity and compare it to the optimal one? Here is my code:\n{code}"
     )
     

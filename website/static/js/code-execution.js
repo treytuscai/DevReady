@@ -201,8 +201,8 @@ function createComplexityModal() {
 //Pass code to analyze_complexity endpoint and await response
 async function analyzeTimeComplexity() {
     //Get the question title element and content
-    const questionTitleElement = document.getElementById("question-title");
-    const questionTitle = questionTitleElement ? questionTitleElement.textContent.trim() : null;
+    const questionDescriptionElement = document.getElementById("question-description");
+    const questionDescription = questionDescriptionElement ? questionDescriptionElement.textContent.trim() : null;
 
     //Get editor and code
     const editor = ace.edit("editor");
@@ -211,7 +211,7 @@ async function analyzeTimeComplexity() {
     //Create payload
     const payload = {
         "code": code,
-        "question": questionTitle
+        "question_description": questionDescription
     };
 
     //Get modal body for results
@@ -327,6 +327,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 });
 
+//formats output to be displayed in the output box
 function formatOutput(value) {
     // Handle complex numbers (convert to string)
     if (typeof value === 'string' && value.includes('j')) {

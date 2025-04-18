@@ -60,7 +60,7 @@ def test_analyze_success(client, app):
 
             # Send POST request to /analyze_submission
             response = client.post('/analyze_submission', json={
-                "question": "test description",
+                "question_description": "test description",
                 "code": "test code"
             })
 
@@ -76,7 +76,7 @@ def test_analyze_error(client, app):
 
             # Send POST request to /analyze_submission
             response = client.post('/analyze_submission', json={
-                "question": "test description",
+                "question_description": "test description",
                 "code": "test code"
             })
 
@@ -100,4 +100,4 @@ def test_analyze_missing_desc_error(client, app):
             assert response.status_code == 400
             response_json = json.loads(response.data)
             assert response_json["success"] is False
-            assert response_json["error"] == "Missing question title or code"
+            assert response_json["error"] == "Missing question description or code"
