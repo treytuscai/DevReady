@@ -64,17 +64,19 @@ def execute_code_with_test(code, test_input, expected_method, language):
 
             return {
                 "output": parsed_data.get("result"),
-                "stdout": parsed_data.get("stdout", "").split("\n") 
+                # Prevent empty lines in list
+                "stdout": [line for line in parsed_data.get("stdout", "").split("\n") if line]
                 if parsed_data.get("stdout") else None,
-                "stderr": parsed_data.get("stderr", "").split("\n") 
+                "stderr": [line for line in parsed_data.get("stderr", "").split("\n") if line]
                 if parsed_data.get("stderr") else None
             }
         except json.JSONDecodeError:
             # If output is not valid JSON, return as plain output
             return {
                 "output": None,
-                "stdout": output_text.split("\n") if output_text else None,
-                "stderr": None
+                "stdout": None,
+                "stderr": [line for line in output_text.split("\n") if line]
+                if output_text else None
             }
 
     except requests.RequestException as e:

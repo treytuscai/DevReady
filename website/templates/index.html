@@ -170,8 +170,8 @@
                         <div class="d-flex align-items-center justify-content-between">
                             <div id="test-case-buttons" class="d-flex flex-wrap gap-2">
                                 {% for sample_test in sample_tests %}
-                                <button class="btn-testcase"
-                                    onclick="showTestCase('', '{{ sample_test.inputData }}', [], '{{ sample_test.output }}', '{{ sample_test.expectedOutput }}', this)">
+                                <button class="btn-testcase" 
+                                        onclick="showTestCase('{{ sample_test.stderr }}', '{{ sample_test.inputData }}', '{{ sample_test.stdout }}', '{{ sample_test.output }}', '{{ sample_test.expectedOutput }}', this, true)">
                                     Case {{ loop.index }}
                                 </button>
                                 {% endfor %}
