@@ -183,6 +183,29 @@ body {
     }
 }
 
+/* Code Badges */
+.code-badge-dark {
+    color: #ff7a00;
+    font-family: monospace;
+    font-size: 0.9em;
+    display: inline-block;
+}
+
+.code-badge-light {
+    color: white;
+    font-family: monospace;
+    font-size: 0.9em;
+    display: inline-block;
+}
+
+/* Language select */
+#language-select {
+    background-color: black;
+    color: white;
+    font-weight: bold;
+    border-color: black;
+}
+
 /* Buttons */
 .btn-custom {
     background: linear-gradient(90deg, #FF7A00, #FF7A00);
@@ -225,6 +248,60 @@ body {
     font-weight: bold;
     border-color: #ff9500;
     box-shadow: 0 0 10px rgba(255, 122, 0, 0.4);
+}
+
+.btn-testcase-fail {
+    background-color: #1a1a1a;
+    color: red;
+    border: 1px solid #444;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-testcase-fail:hover {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-color: red;
+}
+  
+.btn-testcase-fail.active {
+    background-color: red;
+    color: black;
+    font-weight: bold;
+    border-color: #ff6666;
+    box-shadow: 0 0 10px rgba(255, 102, 102, 0.4);
+}
+
+.btn-testcase-pass {
+    background-color: #1a1a1a;
+    color: #00c851;
+    border: 1px solid #444;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.btn-testcase-pass:hover {
+    background-color: #2a2a2a;
+    color: #fff;
+    border-color: #00c851;
+}
+  
+.btn-testcase-pass.active {
+    background-color: #00c851;
+    color: black;
+    font-weight: bold;
+    border-color: #00e676;
+    box-shadow: 0 0 10px rgba(0, 230, 118, 0.4);
 }
 
 .btn-run {
@@ -383,6 +460,7 @@ footer {
 /* Badge Styling (difficulty) */
 .badge.bg-success {
     background-color: #00c851 !important; /* brighter green */
+    color: black;
 }
 
 .badge.bg-warning {
@@ -392,6 +470,7 @@ footer {
 
 .badge.bg-danger {
     background-color: #ff4444 !important; /* vibrant red */
+    color: black;
 }
 
 .accordion-link {
@@ -523,4 +602,9 @@ a {
 
 a:hover {
     color: #FFA733;
+}
+
+.form-check-input:checked {
+    background-color: #FF7A00;
+    border-color: #FF7A00;
 }
