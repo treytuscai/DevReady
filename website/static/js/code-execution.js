@@ -61,7 +61,7 @@ function displayRunResults(results) {
     results.forEach((test, i) => {
         if (i < buttons.length) {
             const btn = buttons[i];
-            btn.className = test.passed ? "btn btn-success" : "btn btn-danger";
+            btn.className = test.passed ? "btn-testcase-pass" : "btn-testcase-fail";
             btn.onclick = () => showTestCase(test.stderr, test.input, test.stdout, test.output, test.expected, btn, false);
         }
     });
