@@ -35,12 +35,14 @@ def get_question_by_id(question_id):
             return jsonify({"error": "Question not found"}), 404
         sample_tests = [test for test in question.testCases if test.isSample]
         acceptance_rate = get_acceptance_rate(question_id)
+        has_passed = has_passed_question(current_user.userID, question.questionID)
 
         return render_template('question.html',
                              question=question,
                              sample_tests=sample_tests,
                              user=current_user,
-                             acceptance_rate=acceptance_rate)
+                             acceptance_rate=acceptance_rate,
+                             has_passed = has_passed)
     except Exception as e:
         return jsonify({"error": "Failed to fetch question", "details": str(e)}), 500
 
@@ -155,6 +157,14 @@ def get_all_completed_questions(user_id):
     completed_question_ids = {qid[0] for qid in completed_question_ids}
     return completed_question_ids
 
+def has_passed_question(user_id, question_id):
+    """Return True if the user has passed the given question."""
+    passed = (
+        db.session.query(Submission)
+        .filter_by(userID=user_id, questionID=question_id, result="Passed")
+        .first()
+    )
+    return passed is not None
 
 def get_acceptance_rate(question_id):
     """Get the acceptance rate of a given question."""
