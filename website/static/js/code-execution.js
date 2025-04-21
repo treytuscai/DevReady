@@ -26,7 +26,7 @@ async function executeCode(endpoint, isSubmission = false) {
     if (isSubmission) {
         testCaseStatus.innerHTML = `
           <div class="d-flex align-items-center gap-2">
-            <span>Running test cases...</span>
+            <span>Running Tests...</span>
             <div class="spinner-border text-primary" role="status">
               <span class="visually-hidden">Loading...</span>
             </div>
@@ -73,7 +73,6 @@ function displayRunResults(results) {
 //displays results of submission to user
 //i.e. "19/20 test cases passed"
 function displaySubmissionResults(results) {
-    const testCaseButtons = document.getElementById('test-case-buttons');
     const testCaseStatus = document.getElementById('test-case-status');
 
     // Clear the right side
@@ -83,6 +82,8 @@ function displaySubmissionResults(results) {
     const totalCases = results.length;
 
     if (passedCases === totalCases) {
+        const checkmark = document.getElementById('checkmark')
+        checkmark.innerHTML = "✅"
 
         const testCaseStatus = document.getElementById('test-case-status');
         testCaseStatus.innerHTML = "";
@@ -100,7 +101,7 @@ function displaySubmissionResults(results) {
         successMessage.style.color = "#00c851";
         successMessage.style.fontFamily = "Inter, sans-serif";
         successMessage.style.fontWeight = "600";
-        successMessage.textContent = "Successful submission!";
+        successMessage.textContent = "Successful Submission!";
         leftDiv.appendChild(successMessage);
 
         // "n/n test cases passed" text
@@ -108,7 +109,7 @@ function displaySubmissionResults(results) {
         passMessage.style.color = "#00c851"; 
         passMessage.style.fontFamily = "Inter, sans-serif";
         passMessage.style.fontWeight = "600";
-        passMessage.textContent = `${passedCases}/${totalCases} test cases passed`;
+        passMessage.textContent = `${passedCases}/${totalCases} Tests Passed`;
         leftDiv.appendChild(passMessage);
 
         // Right container
@@ -136,34 +137,12 @@ function displaySubmissionResults(results) {
             createComplexityModal();
         }
     } else {
-        //Keep test case buttons if failed submissions
         const failMessage = document.createElement('span');
         failMessage.style.color = "red";
         failMessage.style.fontFamily = "Inter, sans-serif";
         failMessage.style.fontWeight = "600";
-        failMessage.textContent = `${passedCases}/${totalCases} test cases passed`;
+        failMessage.textContent = `${passedCases}/${totalCases} Tests Passed`;
         testCaseStatus.appendChild(failMessage);
-
-        const buttons = testCaseButtons.querySelectorAll("button");
-        results.slice(0, 3).forEach((test, i) => {
-            if (i < buttons.length) {
-                buttons[i].classList.remove("btn-testcase");
-                buttons[i].classList.add(test.passed ? "btn-success" : "btn-danger");
-            }
-        });
-
-        // Show the first test case details by default
-        if (results.length > 0 && buttons.length > 0) {
-            showTestCase(
-                results[0].stderr,
-                results[0].input,
-                results[0].stdout,
-                results[0].output,
-                results[0].expected,
-                buttons[0],
-                false
-            );
-        }
     }
 }
 
