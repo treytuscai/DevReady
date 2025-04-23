@@ -117,6 +117,8 @@ def run_tests(code, test_cases, expected_method, language):
             "stderr": execution_result.get("stderr", [])
         })
 
+        print(f"got {output}, want {test.expectedOutput} for test: {test.inputData}")
+
         if not passed:
             all_passed = False
 
@@ -194,9 +196,12 @@ def submit_solution(question_id):
         "results": results
     })
 
+
 def format_python(code, test_input, expected_method):
     """Format Python submission"""
-    return """
+    is_linked_list = is_linked_list_question(expected_method)
+
+    base_imports = """
 # Common imports for LeetCode problems
 from typing import List, Dict, Tuple, Optional, Set
 import collections
@@ -205,9 +210,60 @@ import heapq
 import bisect
 import math
 import functools
+"""
 
-""" + code + f"""
+    linked_list_code = """
+# LinkedList implementation for LinkedList problems
+class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+            
+def list_to_linked_list(values):
+    if not values:
+        return None
+    head = ListNode(values[0])
+    current = head
+    for val in values[1:]:
+        current.next = ListNode(val)
+        current = current.next
+    return head
+        
+def linked_list_to_list(head):
+    if head is None:
+        return []
+    result = []
+    current = head
+    while current:
+        result.append(current.val)
+        current = current.next
+    return result
+""" if is_linked_list else ""
 
+    input_processing = """
+# Process linked list inputs if needed
+if isinstance(input_data, dict):
+    # Check if any inputs are potential linked list values
+    for key, value in input_data.items():
+        if isinstance(value, list) and (key.endswith('head') or key == 'head' or key.endswith('list') or key.endswith('l1') or key.endswith('l2')):
+            # Convert list to LinkedList
+            input_data[key] = list_to_linked_list(value)
+elif isinstance(input_data, list):
+    # If it's a linked list question and input is a list, convert it
+    input_data = list_to_linked_list(input_data)
+""" if is_linked_list else ""
+
+    output_processing = """
+# Convert linked list results back to Python lists for comparison
+if result is None:
+    result = None  # Keep None as None
+elif isinstance(result, ListNode):
+    result = linked_list_to_list(result)
+elif isinstance(result, list) and result and isinstance(result[0], ListNode):
+    result = [linked_list_to_list(node) for node in result]
+""" if is_linked_list else ""
+
+    full_code = base_imports + linked_list_code + code + f"""
 # Test runner
 import json
 import sys
@@ -216,6 +272,8 @@ from contextlib import redirect_stdout, redirect_stderr
 
 # Parse input
 input_data = {test_input}
+
+{input_processing}
 
 # Run solution
 sol = Solution()
@@ -232,6 +290,8 @@ with redirect_stdout(stdout_buffer), redirect_stderr(stderr_buffer):
         print(f"{{type(e).__name__}}: {{str(e)}}", file=sys.stderr)
         result = None
 
+{output_processing}
+
 # Format output
 print(json.dumps({{
     "result": result,
@@ -239,13 +299,88 @@ print(json.dumps({{
     "stderr": stderr_buffer.getvalue()
 }}))
 """
+    return full_code
 
 def format_javascript(code, test_input, expected_method):
-    """Format JavaScript submission to handle multiple JS function definition patterns."""
+    """Format JavaScript submission with linked list support."""
+
+    is_linked_list = is_linked_list_question(expected_method)
+
+    # Define ListNode globally, before the IIFE
+    global_linked_list_code = """
+// Define ListNode globally so user code can access it
+function ListNode(val, next) {
+    this.val = (val === undefined ? 0 : val);
+    this.next = (next === undefined ? null : next);
+}
+""" if is_linked_list else ""
+
+    # Helper functions inside the IIFE
+    linked_list_helpers = """
+    // Helper functions for linked list operations
+    function listToLinkedList(values) {
+        if (!values || values.length === 0) {
+            return null;
+        }
+
+        const head = new ListNode(values[0]);
+        let current = head;
+        
+        for (let i = 1; i < values.length; i++) {
+            current.next = new ListNode(values[i]);
+            current = current.next;
+        }
+
+        return head;
+    }
+
+    function linkedListToList(head) {
+        if (!head) {
+            return [];
+        }
+
+        const result = [];
+        let current = head;
+
+        while (current) {
+            result.push(current.val);
+            current = current.next;
+        }
+
+        return result;
+    }
+""" if is_linked_list else ""
 
     js_input = json.dumps(test_input)
 
-    # Add special handling for common problem types
+    # Add special handling for linked list problems
+    linked_list_input_processing = """
+    // Process linked list inputs
+    if (typeof input === 'object' && input !== null) {
+        for (const key in input) {
+            if (Array.isArray(input[key]) && 
+                (key === 'head' || key.endsWith('head') || key === 'l1' || key === 'l2' || key.endsWith('list'))) {
+                input[key] = listToLinkedList(input[key]);
+            }
+        }
+    } else if (Array.isArray(input)) {
+        input = listToLinkedList(input);
+    }
+""" if is_linked_list else ""
+
+    linked_list_output_processing = """
+    // Convert linked list results back to arrays for JSON serialization
+    if (result !== null && typeof result === 'object' && 'val' in result && 'next' in result) {
+        result = linkedListToList(result);
+    } else if (Array.isArray(result) && result.length > 0 && 
+              result[0] && typeof result[0] === 'object' && 
+              'val' in result[0] && 'next' in result[0]) {
+        result = result.map(node => linkedListToList(node));
+    } else {
+    }
+""" if is_linked_list else ""
+
+    # Function call block with pattern matching
     function_call_block = ""
 
     try:
@@ -262,6 +397,36 @@ def format_javascript(code, test_input, expected_method):
                     result = solution.twoSum(input.nums, input.target);
                 }}"""
 
+            # AddTwoNumbers (#2)
+            elif expected_method.lower() == "addtwonumbers" and "l1" in input_data and "l2" in input_data:
+                function_call_block = f"""
+                if (typeof addTwoNumbers === 'function') {{
+                    result = addTwoNumbers(input.l1, input.l2);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).addTwoNumbers === 'function') {{
+                    const solution = new Solution();
+                    result = solution.addTwoNumbers(input.l1, input.l2);
+                }}"""
+
+            # RemoveNthFromEnd (#19)
+            elif expected_method.lower() == "removenthfromend" and "head" in input_data and "n" in input_data:
+                function_call_block = f"""
+                if (typeof removeNthFromEnd === 'function') {{
+                    result = removeNthFromEnd(input.head, input.n);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).removeNthFromEnd === 'function') {{
+                    const solution = new Solution();
+                    result = solution.removeNthFromEnd(input.head, input.n);
+                }}"""
+
+            # MergeTwoLists (#21)
+            elif expected_method.lower() == "mergetwolists" and "list1" in input_data and "list2" in input_data:
+                function_call_block = f"""
+                if (typeof mergeTwoLists === 'function') {{
+                    result = mergeTwoLists(input.list1, input.list2);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).mergeTwoLists === 'function') {{
+                    const solution = new Solution();
+                    result = solution.mergeTwoLists(input.list1, input.list2);
+                }}"""
+
             # FindMedianSortedArrays (#4)
             elif expected_method.lower() == "findmediansortedarrays" and "nums1" in input_data and "nums2" in input_data:
                 function_call_block = f"""
@@ -271,7 +436,7 @@ def format_javascript(code, test_input, expected_method):
                     const solution = new Solution();
                     result = solution.findMedianSortedArrays(input.nums1, input.nums2);
                 }}"""
- 
+
             # ZigZag Conversion (#6)
             elif expected_method.lower() == "convert" and "s" in input_data and "numRows" in input_data:
                 function_call_block = f"""
@@ -301,38 +466,46 @@ def format_javascript(code, test_input, expected_method):
                     const solution = new Solution();
                     result = solution.threeSumClosest(input.nums, input.target);
                 }}"""
+
     except:
         pass
-            # If we didn't set a special function call block, use the default behavior
+
     if not function_call_block:
-        function_call_block = f"""
-        if (typeof {expected_method} === 'function') {{
-            result = {expected_method}(input);
-        }}
-        else if (typeof Solution === 'function' && typeof (new Solution())['{expected_method}'] === 'function') {{
-            const solution = new Solution();
-            result = solution['{expected_method}'](input);
-        }}
-        else if (typeof {expected_method}Solution === 'function') {{
-            result = {expected_method}Solution(input);
-        }}"""
+            function_call_block = f"""
+            if (typeof {expected_method} === 'function') {{
+                result = {expected_method}(input);
+            }}
+            else if (typeof Solution === 'function' && typeof (new Solution())['{expected_method}'] === 'function') {{
+                const solution = new Solution();
+                result = solution['{expected_method}'](input);
+            }}
+            else if (typeof {expected_method}Solution === 'function') {{
+                result = {expected_method}Solution(input);
+            }}"""
 
     formatted_code = f"""
+{global_linked_list_code}
 // User submitted code:
 {code}
 
 // Test runner for JavaScript
 (function() {{
+{linked_list_helpers}
+
     const input = JSON.parse({js_input});
     let result = null;
     let stdout_capture = "";
     let stderr_capture = ""; 
 
     try {{
-        {function_call_block}
+{linked_list_input_processing}
+
+{function_call_block}
         else {{
             throw new Error(`Runtime Error: Function '{expected_method}' not found. Make sure it's defined as a global function, a method on a Solution class, or matches expected naming patterns.`);
         }}
+
+{linked_list_output_processing}
     }} catch (e) {{
         stderr_capture = e.toString();
         result = null;
@@ -348,67 +521,111 @@ def format_javascript(code, test_input, expected_method):
     return formatted_code
 
 def execute_typescript_as_javascript(code, test_input, expected_method):
-    """
-    Converts TypeScript to JavaScript by stripping type annotations.
-    Uses a regex to capture function declarations and then splits parameters
-    on commas to remove each type annotation.
-    """
-    # Regex to capture function declaration with parameters and optional return type.
-    function_pattern = re.compile(
-        r'function\s+([a-zA-Z0-9_$]+)\s*\(\s*(.*?)\s*\)\s*(?::\s*[a-zA-Z0-9_$<>\[\],\s|&{}]+)?\s*\{',
-        flags=re.DOTALL
+    """Converts TypeScript to JavaScript with proper handling of linked‑list problems."""
+    import re
+
+    # 1.  Remove /** … */ comment blocks
+    code = re.sub(r'/\*\*[\s\S]*?\*/', '', code)
+
+    # 2. Strip generic type arguments, e.g.  Map<number,string>
+    code = re.sub(r'<\s*[A-Za-z0-9_$,\s]*?>', '', code)
+
+    # 3.  Remove return‑type annotations on free functions
+    code = re.sub(
+        r'function\s+([A-Za-z0-9_$]+)\s*\(\s*([^)]*?)\s*\)\s*:\s*[^{]+\{',
+        lambda m: f'function {m.group(1)}({strip_param_types(m.group(2))}) {{',
+        code
     )
 
-    def process_function_match(match):
-        func_name = match.group(1)
-        params = match.group(2)
-        # Split parameters by comma and remove type annotations for each
-        def strip_param(param):
-            return re.sub(r'\s*:\s*.*', '', param).strip()
-        param_list = [strip_param(p) for p in params.split(',') if p.strip()]
-        new_params = ', '.join(param_list)
-        return f'function {func_name}({new_params}) {{'
+    # 4.  Remove return‑type annotations on class/obj methods
+    code = re.sub(
+        r'(\s+)([A-Za-z0-9_$]+)\s*\(\s*([^)]*?)\s*\)\s*:\s*[^{]+\{',
+        lambda m: f'{m.group(1)}{m.group(2)}({strip_param_types(m.group(3))}) {{',
+        code
+    )
 
-    # Apply the function signature stripping:
-    js_code = function_pattern.sub(process_function_match, code)
+    # 5.  Drop variable declarations that have a type but no initializer
+    code = re.sub(
+        r'(const|let|var)\s+([A-Za-z0-9_$]+)\s*:\s*[^=;]+;',
+        r'\1 \2;',
+        code
+    )
 
-    # Remove other type-level syntax:
-    # 1. Object type annotations (e.g., "const obj: { [key: string]: number } = {}")
-    js_code = re.sub(
-        r'(const|let|var)\s+([a-zA-Z0-9_$]+)\s*:\s*\{\s*\[[^\]]+\]\s*:[^=]+\}\s*=',
-        r'\1 \2 =',
-        js_code
+    # 6.  Drop variable type annotations withinitializer
+    code = re.sub(
+        r'(const|let|var)\s+([A-Za-z0-9_$]+)\s*:\s*[^=;]+?(\s*=)',
+        r'\1 \2\3',
+        code
     )
-    # 2. Variable declarations with types (e.g., "let x: number = ...")
-    js_code = re.sub(
-        r'(let|var|const)\s+([a-zA-Z0-9_$]+)\s*:\s*[a-zA-Z0-9_$<>\[\],\s|&{}]+\s*=',
-        r'\1 \2 =',
-        js_code
-    )
-    # 3. Class field declarations with types (e.g., "field: number;")
-    js_code = re.sub(
-        r'([a-zA-Z0-9_$]+)\s*:\s*[a-zA-Z0-9_$<>\[\],\s|&{}]+\s*;',
-        r'\1;',
-        js_code
-    )
-    # 4. Remove interface or type definitions entirely
-    interface_type_pattern = re.compile(
-        r'(interface|type)\s+[a-zA-Z0-9_$]+\s*(\{\s*[^}]*\}|\s*=\s*[^;]*);?',
-        re.DOTALL
-    )
-    js_code = interface_type_pattern.sub('', js_code)
-    # 5. Remove generic type annotations (e.g., "<number, string>")
-    js_code = re.sub(r'<[a-zA-Z0-9_$<>\[\],\s|&{}]+>', '', js_code)
-    # 6. Remove type assertions (e.g., "as SomeType")
-    js_code = re.sub(r'\s+as\s+[a-zA-Z0-9_$<>\[\],\s|&{}]+', '', js_code)
-    # 7. Remove non-null assertions (e.g., "variable!")
-    js_code = re.sub(r'([a-zA-Z0-9_$\.\(\)\[\]]+)!', r'\1', js_code)
 
-    # Now wrap the stripped code in our standard JavaScript test runner:
-    return format_javascript(js_code, test_input, expected_method)
+    # 7.  Convert BigInt literals
+    code = re.sub(r'(\d+)n', r'BigInt(\1)', code)
+
+    # 8.  Remove “as” and non‑null assertions
+    code = re.sub(r'\s+as\s+[A-Za-z0-9_$<>\[\],\s|&{}]+', '', code)
+    code = re.sub(r'([A-Za-z0-9_$\.\(\)\[\]]+)!', r'\1', code)
+
+
+    # Run the formatted code as JavaScript
+    return format_javascript(code, test_input, expected_method)
+
+def strip_param_types(params_str):
+    """Helper function to strip type annotations from function parameters."""
+    if not params_str.strip():
+        return ""
+
+    result = []
+    params = params_str.split(',')
+
+    for param in params:
+        param_name = param.split(':', 1)[0].strip()
+        result.append(param_name)
+
+    return ', '.join(result)
 
 def format_go(code, test_input, expected_method):
-    """Format Go submission to handle Go's execution model."""
+    """Format Go submission to handle Go's execution model with linked list support."""
+
+    is_linked_list = is_linked_list_question(expected_method)
+
+    # Define linked list structure and helper functions
+    linked_list_code = """
+// ListNode definition for linked list problems
+type ListNode struct {
+    Val int
+    Next *ListNode
+}
+
+// Converts a slice of integers to a linked list
+func sliceToLinkedList(values []int) *ListNode {
+    if len(values) == 0 {
+        return nil
+    }
+
+    head := &ListNode{Val: values[0]}
+    current := head
+
+    for i := 1; i < len(values); i++ {
+        current.Next = &ListNode{Val: values[i]}
+        current = current.Next
+    }
+
+    return head
+}
+
+// Converts a linked list back to a slice of integers
+func linkedListToSlice(head *ListNode) []int {
+    result := []int{}
+    current := head
+
+    for current != nil {
+        result = append(result, current.Val)
+        current = current.Next
+    }
+
+    return result
+}
+""" if is_linked_list else ""
 
     # Convert test_input to a Go-compatible string representation
     import json
@@ -422,99 +639,139 @@ def format_go(code, test_input, expected_method):
     input_declaration = ""
     function_call = ""
 
-    if isinstance(input_data, list):
-        # Handle array/slice input
-        if all(isinstance(x, int) for x in input_data):
-            # Integer array
-            input_declaration = f"input := []int{{{', '.join(map(str, input_data))}}}"
-            function_call = f"result := {expected_method}(input)"
-        elif all(isinstance(x, float) for x in input_data):
-            # Float array
-            input_declaration = f"input := []float64{{{', '.join(map(str, input_data))}}}"
-            function_call = f"result := {expected_method}(input)"
-        elif all(isinstance(x, str) for x in input_data):
-            # String array
-            string_elements = []
-            for x in input_data:
-                string_elements.append(f'\"{x}\"')
-            input_declaration = f"input := []string{{{', '.join(string_elements)}}}"
-            function_call = f"result := {expected_method}(input)"
-        elif all(isinstance(x, list) for x in input_data):
-            # 2D array/matrix
-            if all(all(isinstance(y, int) for y in row) for row in input_data):
-                # 2D int array
-                rows = []
-                for row in input_data:
-                    rows.append(f"{{{', '.join(map(str, row))}}}")
-                input_declaration = f"input := [][]int{{{', '.join(rows)}}}"
+    if is_linked_list and isinstance(input_data, dict):
+        # Handle linked list specific inputs
+        if "l1" in input_data and "l2" in input_data and expected_method.lower() == "addtwonumbers":
+            # Add Two Numbers problem
+            l1_values = input_data["l1"]
+            l2_values = input_data["l2"]
+
+            if isinstance(l1_values, list) and isinstance(l2_values, list):
+                # Create linked lists from arrays
+                input_declaration = f"""
+    // Convert input arrays to linked lists
+    l1Values := []int{{{', '.join(map(str, l1_values))}}}
+    l2Values := []int{{{', '.join(map(str, l2_values))}}}
+    l1 := sliceToLinkedList(l1Values)
+    l2 := sliceToLinkedList(l2Values)
+"""
+                function_call = f"""
+    // Call function and convert result to slice
+    linkedListResult := {expected_method}(l1, l2)
+    result := linkedListToSlice(linkedListResult)
+"""
+        elif "head" in input_data and "n" in input_data and expected_method.lower() == "removenthfromend":
+            # Remove Nth From End problem
+            head_values = input_data["head"]
+            n_value = input_data["n"]
+
+            if isinstance(head_values, list) and isinstance(n_value, int):
+                input_declaration = f"""
+    // Convert input array to linked list
+    headValues := []int{{{', '.join(map(str, head_values))}}}
+    head := sliceToLinkedList(headValues)
+    n := {n_value}
+"""
+                function_call = f"""
+    // Call function and convert result to slice
+    linkedListResult := {expected_method}(head, n)
+    result := linkedListToSlice(linkedListResult)
+"""
+    elif not is_linked_list:
+        # Handle non-linked list inputs (your existing code)
+        if isinstance(input_data, list):
+            # Handle array/slice input
+            if all(isinstance(x, int) for x in input_data):
+                # Integer array
+                input_declaration = f"input := []int{{{', '.join(map(str, input_data))}}}"
                 function_call = f"result := {expected_method}(input)"
-            else:
-                # Generic 2D array - handle with interface{}
-                input_declaration = "// Complex input structure, using JSON parsing"
-                json_str = json.dumps(input_data)
-                input_declaration += f"\ninputJSON := `{json_str}`"
-                input_declaration += "\nvar input [][]interface{}"
-                input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
+            elif all(isinstance(x, float) for x in input_data):
+                # Float array
+                input_declaration = f"input := []float64{{{', '.join(map(str, input_data))}}}"
                 function_call = f"result := {expected_method}(input)"
-    elif isinstance(input_data, dict):
-        
-        if expected_method.lower() == "twosum" and "nums" in input_data and "target" in input_data:
-            #Two Sum (#1)
-            nums = input_data["nums"]
-            target = input_data["target"]
-            if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
-                input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
-                function_call = f"result := {expected_method}(nums, target)"
-        elif expected_method.lower() == "findmediansortedarrays" and "nums1" in input_data and "nums2" in input_data:
-            #Find Median of Sorted Arrays (#4)
-            nums1 = input_data["nums1"]
-            nums2 = input_data["nums2"]
-            if isinstance(nums1, list) and all(isinstance(x, int) for x in nums1) and isinstance(nums2, list) and all(isinstance(x, int) for x in nums2):
-                input_declaration = f"nums1 := []int{{{', '.join(map(str, nums1))}}}\nnums2 := []int{{{', '.join(map(str, nums2))}}}"
-                function_call = f"result := {expected_method}(nums1, nums2)"
-                
-        elif expected_method.lower() == "convert" and "s" in input_data and "numRows" in input_data:
-            #Zigzag Conversion (#6)
-            s = input_data["s"]
-            numRows = input_data["numRows"]
-            if isinstance(s, str) and isinstance(numRows, int):
-                input_declaration = f"s := \"{s}\"\nnumRows := {numRows}"
-                function_call = f"result := {expected_method}(s, numRows)"
-        elif expected_method.lower() == "ismatch" and "s" in input_data and "p" in input_data:
-            #Regular Expression Matching (#10)
-            s = input_data["s"]
-            p = input_data["p"]
-            if isinstance(s, str) and isinstance(p, str):
-                input_declaration = f"s := \"{s}\"\np := \"{p}\""
-                function_call = f"result := isMatch(s, p)"
-        elif expected_method.lower() == "threesumclosest" and "nums" in input_data and "target" in input_data:
-            #3Sum Closest (#16)
-            nums = input_data["nums"]
-            target = input_data["target"]
-            if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
-                input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
-                function_call = f"result := threeSumClosest(nums, target)"
-        elif isinstance(input_data, int):
-        # Single integer
+            elif all(isinstance(x, str) for x in input_data):
+                # String array
+                string_elements = []
+                for x in input_data:
+                    string_elements.append(f'\"{x}\"')
+                input_declaration = f"input := []string{{{', '.join(string_elements)}}}"
+                function_call = f"result := {expected_method}(input)"
+            elif all(isinstance(x, list) for x in input_data):
+                # 2D array/matrix
+                if all(all(isinstance(y, int) for y in row) for row in input_data):
+                    # 2D int array
+                    rows = []
+                    for row in input_data:
+                        rows.append(f"{{{', '.join(map(str, row))}}}")
+                    input_declaration = f"input := [][]int{{{', '.join(rows)}}}"
+                    function_call = f"result := {expected_method}(input)"
+                else:
+                    # Generic 2D array - handle with interface{}
+                    input_declaration = "// Complex input structure, using JSON parsing"
+                    json_str = json.dumps(input_data)
+                    input_declaration += f"\ninputJSON := `{json_str}`"
+                    input_declaration += "\nvar input [][]interface{}"
+                    input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
+                    function_call = f"result := {expected_method}(input)"
+        elif isinstance(input_data, dict):
+            
+            if expected_method.lower() == "twosum" and "nums" in input_data and "target" in input_data:
+                #Two Sum (#1)
+                nums = input_data["nums"]
+                target = input_data["target"]
+                if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
+                    input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
+                    function_call = f"result := {expected_method}(nums, target)"
+            elif expected_method.lower() == "findmediansortedarrays" and "nums1" in input_data and "nums2" in input_data:
+                #Find Median of Sorted Arrays (#4)
+                nums1 = input_data["nums1"]
+                nums2 = input_data["nums2"]
+                if isinstance(nums1, list) and all(isinstance(x, int) for x in nums1) and isinstance(nums2, list) and all(isinstance(x, int) for x in nums2):
+                    input_declaration = f"nums1 := []int{{{', '.join(map(str, nums1))}}}\nnums2 := []int{{{', '.join(map(str, nums2))}}}"
+                    function_call = f"result := {expected_method}(nums1, nums2)"
+                    
+            elif expected_method.lower() == "convert" and "s" in input_data and "numRows" in input_data:
+                #Zigzag Conversion (#6)
+                s = input_data["s"]
+                numRows = input_data["numRows"]
+                if isinstance(s, str) and isinstance(numRows, int):
+                    input_declaration = f"s := \"{s}\"\nnumRows := {numRows}"
+                    function_call = f"result := {expected_method}(s, numRows)"
+            elif expected_method.lower() == "ismatch" and "s" in input_data and "p" in input_data:
+                #Regular Expression Matching (#10)
+                s = input_data["s"]
+                p = input_data["p"]
+                if isinstance(s, str) and isinstance(p, str):
+                    input_declaration = f"s := \"{s}\"\np := \"{p}\""
+                    function_call = f"result := isMatch(s, p)"
+            elif expected_method.lower() == "threesumclosest" and "nums" in input_data and "target" in input_data:
+                #3Sum Closest (#16)
+                nums = input_data["nums"]
+                target = input_data["target"]
+                if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
+                    input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
+                    function_call = f"result := threeSumClosest(nums, target)"
+            elif isinstance(input_data, int):
+                # Single integer
+                input_declaration = f"input := {input_data}"
+                function_call = f"result := {expected_method}(input)"
+
+        elif isinstance(input_data, float):
+            # Single float
             input_declaration = f"input := {input_data}"
             function_call = f"result := {expected_method}(input)"
-            
-    elif isinstance(input_data, float):
-        # Single float
-        input_declaration = f"input := {input_data}"
-        function_call = f"result := {expected_method}(input)"
-    elif isinstance(input_data, str):
-        # Single string
-        input_declaration = f"input := \"{input_data}\""
-        function_call = f"result := {expected_method}(input)"
-    else:
-        # Generic fallback
-        input_declaration = "// Complex or unknown input type, using JSON parsing"
-        json_str = json.dumps(input_data) if input_data is not None else "null"
-        input_declaration += f"\ninputJSON := `{json_str}`"
-        input_declaration += "\nvar input interface{}"
-        input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
-        function_call = f"result := {expected_method}(input)"
+        elif isinstance(input_data, str):
+            # Single string
+            input_declaration = f"input := \"{input_data}\""
+            function_call = f"result := {expected_method}(input)"
+        else:
+            # Generic fallback
+            input_declaration = "// Complex or unknown input type, using JSON parsing"
+            json_str = json.dumps(input_data) if input_data is not None else "null"
+            input_declaration += f"\ninputJSON := `{json_str}`"
+            input_declaration += "\nvar input interface{}"
+            input_declaration += "\njson.Unmarshal([]byte(inputJSON), &input)"
+            function_call = f"result := {expected_method}(input)"
 
     formatted_code = f"""
 package main
@@ -524,26 +781,31 @@ import (
     "fmt"
 )
 
+{linked_list_code}
+
 // User submitted code:
 {code}
 
 func main() {{
     // Set up test input
     {input_declaration}
-    
-    // Call user function
+
     {function_call}
-    
+
     // Convert result to JSON for output
     resultJSON, err := json.Marshal(result)
     if err != nil {{
         fmt.Printf("{{\\\"stderr\\\": \\\"Error serializing result: %v\\\"}}", err)
         return
     }}
-    
+
     // Output result in JSON format for test runner to parse
     fmt.Printf("{{\\\"result\\\": %s}}", resultJSON)
 }}
 """
     return formatted_code
 
+def is_linked_list_question(expected_method):
+    """Returns boolean indicating whether expected_method involves linked lists"""
+    linked_list_questions = set(["addTwoNumbers", "removeNthFromEnd"])
+    return expected_method in linked_list_questions

@@ -10,7 +10,9 @@ from website.code_execution import (
     format_python,
     format_javascript,
     execute_typescript_as_javascript,
-    format_go
+    format_go,
+    is_linked_list_question,
+    run_code_samples
 )
 from collections import namedtuple
 
@@ -206,7 +208,31 @@ def test_run_tests_some_failed():
     assert all_passed is False
     assert results[0]["passed"] is True
     assert results[1]["passed"] is False
-
+    
+    
+def test_run_tests_with_non_json_expected():
+    """
+    Tests run_tests when expectedOutput is not valid JSON.
+    """
+    code = "class Solution:\n    def addTwoNumbers(self, l1, l2):\n        return 'hello'"
+    
+    test_cases = [
+        TestCaseStub("[1, 2, 3]", "hello", True)
+    ]
+    
+    with patch("website.code_execution.execute_code_with_test") as mock_exec:
+        mock_exec.return_value = {
+            "output": "hello",
+            "stdout": [],
+            "stderr": []
+        }
+        
+        results, all_passed = run_tests(code, test_cases, "addTwoNumbers", "python")
+    
+    assert all_passed is True
+    assert results[0]["passed"] is True
+    assert results[0]["expected"] == "hello"
+    
 def test_format_python():
     """
     Tests format_python.
@@ -259,3 +285,310 @@ def test_format_go():
     assert "1, 2, 3" in formatted
     assert "json.Marshal(result)" in formatted
     assert "resultJSON" in formatted
+
+
+def test_format_javascript_linked_list():
+    """
+    Tests format_javascript with linked list input.
+    """
+    code = """
+    function addTwoNumbers(l1, l2) {
+        return l1 + l2;
+    }
+    """
+    formatted = format_javascript(code, {"l1": [4,5,6], "l2": [1,2,3]}, "addTwoNumbers")
+    assert "function addTwoNumbers(l1, l2)" in formatted
+    assert "1, 2, 3" in formatted
+    assert "4, 5, 6" in formatted
+
+def test_format_go_linked_list():
+    """
+    Tests format_go with linked list input.
+    """
+    code = """
+    func addTwoNumbers(l1, l2) int {
+        return l1 + l2;
+    }
+    """
+    formatted = format_go(code, {"l1": [4,5,6], "l2": [1,2,3]}, "addTwoNumbers")
+    assert "func addTwoNumbers(l1, l2)" in formatted
+    assert "4, 5, 6" in formatted
+
+def test_is_linked_list_question_true():
+    """
+    Tests is_linked_list_question.
+    """
+    assert is_linked_list_question("addTwoNumbers") is True
+    assert is_linked_list_question("removeNthFromEnd") is True
+    
+def test_is_linked_list_question_false():
+    """
+    Tests is_linked_list_question.
+    """
+    assert is_linked_list_question("twoSum") is False
+    assert is_linked_list_question("maxArea") is False
+    assert is_linked_list_question("longestPalindrome") is False
+    
+def test_format_go_two_sum():
+    """
+    Tests format_go with two sum.
+    """
+    code = """
+    func twoSum(nums []int, target int) []int {
+        for i := 0; i < len(nums); i++ {
+            for j := i + 1; j < len(nums); j++ {
+                if nums[i] + nums[j] == target {
+                    return []int{i, j}
+                }
+            }
+        }
+        return []int{}
+    }
+    """
+    formatted = format_go(code, {"nums": [2,7,11,15], "target": 9}, "twoSum")
+    assert "func twoSum(nums []int, target int)" in formatted
+    assert "2, 7, 11, 15" in formatted
+    assert "9" in formatted
+    
+def test_format_javascript_two_sum():
+    """
+    Tests format_javascript with two sum.
+    """
+    code = """
+    function twoSum(nums, target) {
+        return nums.reduce((acc, num, index) => {
+            const complement = target - num;
+            if (acc.hasOwnProperty(complement)) {
+                return [acc[complement], index];
+            }
+            acc[num] = index;
+            return acc;
+        }, {});
+    }
+    """
+    formatted = format_javascript(code, {"nums": [2,7,11,15], "target": 9}, "twoSum")
+    assert "function twoSum(nums, target)" in formatted
+    assert "2, 7, 11, 15" in formatted
+    assert "9" in formatted
+
+def test_execute_typescript_as_javascript_two_sum():
+    """
+    Tests execute_typescript_as_javascript with two sum.
+    """
+    code = """
+    function twoSum(nums: number[], target: number): number[] {
+        const map = new Map<number, number>();
+        for (let i = 0; i < nums.length; i++) {
+            const complement = target - nums[i];
+            if (map.has(complement)) {
+                return [map.get(complement), i];
+            }
+            map.set(nums[i], i);
+        }
+        return [];
+    }
+    """ 
+    formatted = execute_typescript_as_javascript(code, {"nums": [2,7,11,15], "target": 9}, "twoSum")
+    assert "function twoSum(nums, target)" in formatted
+    assert "2, 7, 11, 15" in formatted
+    assert "9" in formatted
+
+def test_format_go_basic_integer_array():
+    """Tests format_go with a basic integer array input."""
+    code = """
+    func sumArray(nums []int) int {
+        sum := 0
+        for _, num := range nums {
+            sum += num
+        }
+        return sum
+    }
+    """
+    formatted = format_go(code, [1, 2, 3], "sumArray")
+    assert "input := []int{1, 2, 3}" in formatted
+    assert "result := sumArray(input)" in formatted
+    assert "package main" in formatted
+    assert "encoding/json" in formatted
+
+def test_format_go_float_array():
+    """Tests format_go with float array input."""
+    code = """
+    func average(nums []float64) float64 {
+        sum := 0.0
+        for _, num := range nums {
+            sum += num
+        }
+        return sum / float64(len(nums))
+    }
+    """
+    formatted = format_go(code, [1.5, 2.5, 3.5], "average")
+    assert "input := []float64{1.5, 2.5, 3.5}" in formatted
+    assert "result := average(input)" in formatted
+
+def test_format_go_string_array():
+    """Tests format_go with string array input."""
+    code = """
+    func joinStrings(strs []string) string {
+        return strings.Join(strs, ",")
+    }
+    """
+    formatted = format_go(code, ["hello", "world"], "joinStrings")
+    assert 'input := []string{"hello", "world"}' in formatted
+    assert "result := joinStrings(input)" in formatted
+
+def test_format_go_2d_integer_array():
+    """Tests format_go with 2D integer array input."""
+    code = """
+    func matrixSum(matrix [][]int) int {
+        sum := 0
+        for _, row := range matrix {
+            for _, val := range row {
+                sum += val
+            }
+        }
+        return sum
+    }
+    """
+    formatted = format_go(code, [[1, 2], [3, 4]], "matrixSum")
+    assert "input := [][]int{{1, 2}, {3, 4}}" in formatted
+    assert "result := matrixSum(input)" in formatted
+
+def test_format_go_linked_list():
+    """Tests format_go with linked list input."""
+    code = """
+    func addTwoNumbers(l1 *ListNode, l2 *ListNode) *ListNode {
+        return l1
+    }
+    """
+    test_input = {"l1": [1, 2, 3], "l2": [4, 5, 6]}
+    formatted = format_go(code, test_input, "addTwoNumbers")
+    assert "type ListNode struct" in formatted
+    assert "l1Values := []int{1, 2, 3}" in formatted
+    assert "l2Values := []int{4, 5, 6}" in formatted
+    assert "sliceToLinkedList" in formatted
+    assert "linkedListToSlice" in formatted
+
+def test_format_go_two_sum():
+    """Tests format_go with two sum problem input."""
+    code = """
+    func twoSum(nums []int, target int) []int {
+        return []int{0, 1}
+    }
+    """
+    test_input = {"nums": [2, 7, 11, 15], "target": 9}
+    formatted = format_go(code, test_input, "twoSum")
+    assert "nums := []int{2, 7, 11, 15}" in formatted
+    assert "target := 9" in formatted
+    assert "result := twoSum(nums, target)" in formatted
+
+def test_format_go_remove_nth_from_end():
+    """Tests format_go with removeNthFromEnd problem."""
+    code = """
+    func removeNthFromEnd(head *ListNode, n int) *ListNode {
+        return head
+    }
+    """
+    test_input = {"head": [1, 2, 3, 4, 5], "n": 2}
+    formatted = format_go(code, test_input, "removeNthFromEnd")
+    assert "type ListNode struct" in formatted
+    assert "headValues := []int{1, 2, 3, 4, 5}" in formatted
+    assert "n := 2" in formatted
+    assert "sliceToLinkedList" in formatted
+    assert "linkedListToSlice" in formatted
+
+def test_format_go_single_string():
+    """Tests format_go with single string input."""
+    code = """
+    func reverseString(s string) string {
+        return s
+    }
+    """
+    formatted = format_go(code, "hello", "reverseString")
+    assert 'input := "hello"' in formatted
+    assert "result := reverseString(input)" in formatted
+
+def test_format_go_find_median_sorted_arrays():
+    """Tests format_go with findMedianSortedArrays problem."""
+    code = """
+    func findMedianSortedArrays(nums1 []int, nums2 []int) float64 {
+        return 2.0
+    }
+    """
+    test_input = {"nums1": [1, 3], "nums2": [2, 4]}
+    formatted = format_go(code, test_input, "findMedianSortedArrays")
+    assert "nums1 := []int{1, 3}" in formatted
+    assert "nums2 := []int{2, 4}" in formatted
+    assert "result := findMedianSortedArrays(nums1, nums2)" in formatted
+
+def test_format_go_zigzag_conversion():
+    """Tests format_go with convert (zigzag) problem."""
+    code = """
+    func convert(s string, numRows int) string {
+        return s
+    }
+    """
+    test_input = {"s": "PAYPALISHIRING", "numRows": 3}
+    formatted = format_go(code, test_input, "convert")
+    assert 's := "PAYPALISHIRING"' in formatted
+    assert "numRows := 3" in formatted
+    assert "result := convert(s, numRows)" in formatted
+
+def test_format_go_regular_expression_matching():
+    """Tests format_go with isMatch (regex) problem."""
+    code = """
+    func isMatch(s string, p string) bool {
+        return true
+    }
+    """
+    test_input = {"s": "aa", "p": "a*"}
+    formatted = format_go(code, test_input, "isMatch")
+    assert 's := "aa"' in formatted
+    assert 'p := "a*"' in formatted
+    assert "result := isMatch(s, p)" in formatted
+
+def test_format_go_three_sum_closest():
+    """Tests format_go with threeSumClosest problem."""
+    code = """
+    func threeSumClosest(nums []int, target int) int {
+        return target
+    }
+    """
+    test_input = {"nums": [-1, 2, 1, -4], "target": 1}
+    formatted = format_go(code, test_input, "threeSumClosest")
+    assert "nums := []int{-1, 2, 1, -4}" in formatted
+    assert "target := 1" in formatted
+    assert "result := threeSumClosest(nums, target)" in formatted
+
+def test_format_go_single_integer():
+    """Tests format_go with single integer input."""
+    code = """
+    func square(n int) int {
+        return n * n
+    }
+    """
+    test_input = {"value": 5}
+    formatted = format_go(code, test_input, "square")
+    assert "func square" in formatted
+    assert "fmt" in formatted
+
+def test_format_go_single_float():
+    """Tests format_go with single float input."""
+    code = """
+    func double(n float64) float64 {
+        return n * 2.0
+    }
+    """
+    formatted = format_go(code, 3.14, "double")
+    assert "input := 3.14" in formatted
+    assert "result := double(input)" in formatted
+
+def test_format_go_null_input():
+    """Tests format_go with null input."""
+    code = """
+    func handleNull(data interface{}) interface{} {
+        return nil
+    }
+    """
+    formatted = format_go(code, None, "handleNull")
+    assert "var input interface{}" in formatted
+    assert "result := handleNull(input)" in formatted

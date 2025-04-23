@@ -114,7 +114,7 @@ def analyze_submission():
                          f"The optimal solution runs in {complexity_data.get('optimal_time_complexity', 'Unknown')} time and uses "
                          f"{complexity_data.get('optimal_space_complexity', 'Unknown')} space."
         }
-        print("THis is response: ", response)
+
     except json.JSONDecodeError:
         return jsonify({"success": False, "error": "Failed to parse complexity analysis"}), 500
     except Exception as e:
