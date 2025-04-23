@@ -21,10 +21,11 @@ h1, h2, h3 {
     position: relative;
     overflow: hidden;
     color: white;
+    background-color: black;
 }
 
 .hero-overlay {
-    background: rgba(0, 0, 0, 0.5);
+    background: black);
 }
 
 .hero-content {
@@ -53,7 +54,7 @@ h1, h2, h3 {
 
 /* Global Dark Theme */
 body {
-    background-color: #121212; /* Dark background */
+    background-color: black; /* Dark background */
     color: #EAEAEA; /* Light text */
     font-family: 'Poppins', sans-serif;
 }
@@ -200,8 +201,8 @@ body {
 
 /* Language select */
 #language-select {
-    background-color: black;
-    color: white;
+    background-color: #ff7a00;
+    color: black;
     font-weight: bold;
     border-color: black;
 }
@@ -307,38 +308,43 @@ body {
 .btn-run {
     background-color: #2C2C2C;
     color: #EAEAEA;
-    border: none;
+    border: 1px solid #444;
 }
 .btn-run:hover {
     background-color: #3C3C3C;
     box-shadow: 0 0 8px rgba(255, 255, 255, 0.1);
+    border-color: #ff7a00;
 }
 
 .btn-submit {
     background: linear-gradient(90deg, #FF7A00, #FF7A00);
     color: #121212;
     font-weight: bold;
-    border: none;
+    border: 1px solid #444;
 }
 .btn-submit:hover {
     box-shadow: 0 0 12px rgba(255, 122, 0, 0.7);
     transform: translateY(-1px);
+    border-color: #ff7a00;
 }
 
 .btn-skip {
     background-color: #2C2C2C;
     color: #BBBBBB;
     border: none;
+    border: 1px solid #444;
 }
 .btn-skip:hover {
     background-color: #660000;
     color: white;
+    border-color: #ff7a00;
 }
 
 /* Footer */
 footer {
-    background: #000000;
-    color: #BBBBBB;
+    background: rgba(30, 30, 30, 0.9);;
+    /* color: #BBBBBB; */
+    border-top: 2px solid #FF7A00;
 }
 
 /* Feature Cards - Alternating Colors */
@@ -348,6 +354,10 @@ footer {
 
 .card:nth-child(even) {
     background: #222222; /* Slightly Lighter Gray */
+}
+
+.about-page {
+    background-color: black;
 }
 
 .about-page .card {
@@ -573,7 +583,7 @@ footer {
 .spinner-border.text-primary {
     color: #FF7A00 !important;
 }
-=======
+
 .submission-list {
     background-color: #1A1A1A;
     color: white;
