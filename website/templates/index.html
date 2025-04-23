@@ -21,16 +21,6 @@
     gtag('js', new Date());
     gtag('config', 'G-VL5DJ1Z64V');
 </script>
-<style>
-    .tag {
-        background-color: #e9ecef;
-        color: black;
-        padding: 0.25rem 0.5rem;
-        border-radius: 0.25rem;
-        margin-right: 0.5rem;
-        font-size: 0.875rem;
-    }
-</style>
 
 <body>
     <!-- Navbar -->
@@ -106,7 +96,7 @@
                         {% if question %}
                         <div class="mb-3">
                             {% for tag in question.tags %}
-                            <span class="tag fw-bold">{{ tag.name }}</span>
+                            <span class="tag me-1 mb-1 d-inline-block">{{ tag.name }}</span>
                             {% endfor %}
                         </div>
                         <p id="question-description" class="card-text">
@@ -117,6 +107,20 @@
                             Try exploring our problem library or reviewing previous solutions.
                             If you're new, start with beginner-friendly challenges!
                         </p>
+                        {% endif %}
+                        <!-- Example Test Cases -->
+                        {% if sample_tests %}
+                        <div class="mt-3">
+                            {% for test in sample_tests %}
+                            <div class="mb-3">
+                                <pre class="mb-1"><strong>Example {{ loop.index }}:</strong></pre>
+                                <div class="ps-4">
+                                    <pre class="mb-1">Input: {{ test.inputData }}</pre>
+                                    <pre class="mb-1">Output: {{ test.expectedOutput }}</pre>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
                         {% endif %}
                     </div>
                 </div>
