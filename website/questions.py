@@ -3,6 +3,7 @@ from flask import Blueprint, request, jsonify, render_template
 from flask_login import login_required, current_user
 from .models import Question, QuestionTag, MasteryScore, Submission, Tag
 from .extensions import db
+import random
 
 questions_blueprint = Blueprint("questions", __name__)
 
@@ -34,12 +35,14 @@ def get_question_by_id(question_id):
             return jsonify({"error": "Question not found"}), 404
         sample_tests = [test for test in question.testCases if test.isSample]
         acceptance_rate = get_acceptance_rate(question_id)
+        has_passed = has_passed_question(current_user.userID, question.questionID)
 
         return render_template('question.html',
                              question=question,
                              sample_tests=sample_tests,
                              user=current_user,
-                             acceptance_rate=acceptance_rate)
+                             acceptance_rate=acceptance_rate,
+                             has_passed = has_passed)
     except Exception as e:
         return jsonify({"error": "Failed to fetch question", "details": str(e)}), 500
 
@@ -68,34 +71,58 @@ def get_questions_by_tag():
         return jsonify({"error": "Failed to fetch questions by tag", "details": str(e)}), 500
 
 def get_next_question(user_id):
-    """Fetch the next question based on the user's weakest skill."""
-    # Find the weakest skill (tag with lowest mastery score)
-    weakest_tag = (
-        db.session.query(MasteryScore)
-        .filter_by(userID=user_id)
-        .order_by(MasteryScore.score.asc())
+    """Get the easiest unpassed question from the tag where the user has passed the fewest questions."""
+    
+    # Step 1: Get all tags (initialize tag completion count with 0 for each tag)
+    all_tags = db.session.query(Tag.tagID, Tag.name).all()
+    tag_completion_count = {tag_id: 0 for tag_id, _ in all_tags}
+
+    # Step 2: Get all passed question IDs by the user
+    passed_ids_list = (
+        db.session.query(Submission.questionID)
+        .filter_by(userID=user_id, result="Passed")
+        .distinct()
+        .all()
+    )
+    passed_ids_list = [q[0] for q in passed_ids_list]
+    
+    # Step 3: Get all tags associated with the passed questions
+    passed_question_tags = (
+        db.session.query(QuestionTag.tagID, QuestionTag.questionID)
+        .filter(QuestionTag.questionID.in_(passed_ids_list))  # Only consider passed questions
+        .all()
+    )
+
+    # Step 4: Increment the count for tags associated with the passed questions
+    for tag_id, _ in passed_question_tags:
+        if tag_id in tag_completion_count:
+            tag_completion_count[tag_id] += 1
+
+    # Step 5: Find the minimum completion count
+    min_completion_count = min(tag_completion_count.values(), default=None)
+
+    # Step 6: Filter tags that have the minimum completion count
+    lowest_tags = [tag_id for tag_id, count in tag_completion_count.items() if count == min_completion_count]
+
+    # Step 7: Randomly select one of the lowest tags
+    lowest_tag_id = random.choice(lowest_tags) if lowest_tags else None
+
+    # Step 8: Get an easy question with the tag that has the fewest passed questions
+    question = (
+        db.session.query(Question)
+        .join(QuestionTag, QuestionTag.questionID == Question.questionID)
+        .filter(QuestionTag.tagID == lowest_tag_id)
+        .filter(~Question.questionID.in_(passed_ids_list))  # Exclude already passed questions
+        .order_by(Question.difficulty.asc())
         .first()
     )
 
-    if weakest_tag:
-        # Get an unattempted question for this tag
-        question = (
-            db.session.query(Question)
-            .join(QuestionTag, QuestionTag.questionID == Question.questionID)
-            .filter(QuestionTag.tagID == weakest_tag.tagID)
-            .outerjoin(
-                Submission,
-                (Submission.questionID == Question.questionID) & (Submission.userID == user_id)
-            )
-            .filter(Submission.submissionID == None)
-            .order_by(Question.difficulty)
-            .first()
-        )
-    else:
-        # Default: Get any question if no mastery score exists yet
-        question = db.session.query(Question).order_by(Question.difficulty).first()
+    # If no question found, return a default question
+    if not question:
+        question = db.session.query(Question).order_by(Question.difficulty.asc()).first()
 
-    sample_tests = [test for test in question.testCases if test.isSample]
+    # Step 9: Return the question along with its sample test cases
+    sample_tests = [test for test in question.testCases if test.isSample] if question else []
     return question, sample_tests
 
 def get_all_tags_with_questions():
@@ -130,6 +157,14 @@ def get_all_completed_questions(user_id):
     completed_question_ids = {qid[0] for qid in completed_question_ids}
     return completed_question_ids
 
+def has_passed_question(user_id, question_id):
+    """Return True if the user has passed the given question."""
+    passed = (
+        db.session.query(Submission)
+        .filter_by(userID=user_id, questionID=question_id, result="Passed")
+        .first()
+    )
+    return passed is not None
 
 def get_acceptance_rate(question_id):
     """Get the acceptance rate of a given question."""
