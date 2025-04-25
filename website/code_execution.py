@@ -265,7 +265,7 @@ elif isinstance(input_data, list):
     output_processing = """
 # Convert linked list results back to Python lists for comparison
 if result is None:
-    result = None  # Keep None as None
+    result = []  # Keep None as None
 elif isinstance(result, ListNode):
     result = linked_list_to_list(result)
 elif isinstance(result, list) and result and isinstance(result[0], ListNode):
