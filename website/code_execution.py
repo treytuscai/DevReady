@@ -106,7 +106,17 @@ def run_tests(code, test_cases, expected_method, language):
         except json.JSONDecodeError:
             # If not valid JSON, use the raw string value
             expected = test.expectedOutput
+        if needs_sorted_result(expected_method):
+            if output and isinstance(output[0], list):
+                output = sorted([sorted(inner) for inner in output], key=lambda x: (x[0], x[1], x[2]))
+                expected = sorted([sorted(inner) for inner in expected], key=lambda x: (x[0], x[1], x[2]))
+            else:
+                output = sorted(output) if output else None
+                expected = sorted(expected) if output else None
+            
+            
         passed = output == expected
+
 
         results.append({
             "passed": passed,
@@ -117,7 +127,6 @@ def run_tests(code, test_cases, expected_method, language):
             "stderr": execution_result.get("stderr", [])
         })
 
-        print(f"got {output}, want {test.expectedOutput} for test: {test.inputData}")
 
         if not passed:
             all_passed = False
@@ -407,26 +416,6 @@ function ListNode(val, next) {
                     result = solution.addTwoNumbers(input.l1, input.l2);
                 }}"""
 
-            # RemoveNthFromEnd (#19)
-            elif expected_method.lower() == "removenthfromend" and "head" in input_data and "n" in input_data:
-                function_call_block = f"""
-                if (typeof removeNthFromEnd === 'function') {{
-                    result = removeNthFromEnd(input.head, input.n);
-                }} else if (typeof Solution === 'function' && typeof (new Solution()).removeNthFromEnd === 'function') {{
-                    const solution = new Solution();
-                    result = solution.removeNthFromEnd(input.head, input.n);
-                }}"""
-
-            # MergeTwoLists (#21)
-            elif expected_method.lower() == "mergetwolists" and "list1" in input_data and "list2" in input_data:
-                function_call_block = f"""
-                if (typeof mergeTwoLists === 'function') {{
-                    result = mergeTwoLists(input.list1, input.list2);
-                }} else if (typeof Solution === 'function' && typeof (new Solution()).mergeTwoLists === 'function') {{
-                    const solution = new Solution();
-                    result = solution.mergeTwoLists(input.list1, input.list2);
-                }}"""
-
             # FindMedianSortedArrays (#4)
             elif expected_method.lower() == "findmediansortedarrays" and "nums1" in input_data and "nums2" in input_data:
                 function_call_block = f"""
@@ -465,6 +454,26 @@ function ListNode(val, next) {
                 }} else if (typeof Solution === 'function' && typeof (new Solution()).threeSumClosest === 'function') {{
                     const solution = new Solution();
                     result = solution.threeSumClosest(input.nums, input.target);
+                }}"""
+                
+            #4Sum (#18)
+            elif expected_method.lower() == "foursum" and "nums" in input_data and "target" in input_data:
+                function_call_block = f"""
+                if (typeof fourSum === 'function') {{
+                    result = fourSum(input.nums, input.target);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).fourSum === 'function') {{
+                    const solution = new Solution();
+                    result = solution.fourSum(input.nums, input.target);
+                }}"""
+            
+            # RemoveNthFromEnd (#19)
+            elif expected_method.lower() == "removenthfromend" and "head" in input_data and "n" in input_data:
+                function_call_block = f"""
+                if (typeof removeNthFromEnd === 'function') {{
+                    result = removeNthFromEnd(input.head, input.n);
+                }} else if (typeof Solution === 'function' && typeof (new Solution()).removeNthFromEnd === 'function') {{
+                    const solution = new Solution();
+                    result = solution.removeNthFromEnd(input.head, input.n);
                 }}"""
 
     except:
@@ -751,6 +760,13 @@ func linkedListToSlice(head *ListNode) []int {
                 if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
                     input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
                     function_call = f"result := threeSumClosest(nums, target)"
+            elif expected_method.lower() == "foursum" and "nums" in input_data and "target" in input_data:
+                #4Sum (#18)
+                nums = input_data["nums"]
+                target = input_data["target"]
+                if isinstance(nums, list) and all(isinstance(x, int) for x in nums):
+                    input_declaration = f"nums := []int{{{', '.join(map(str, nums))}}}\ntarget := {target}"
+                    function_call = f"result := fourSum(nums, target)"
             elif isinstance(input_data, int):
                 # Single integer
                 input_declaration = f"input := {input_data}"
@@ -809,3 +825,9 @@ def is_linked_list_question(expected_method):
     """Returns boolean indicating whether expected_method involves linked lists"""
     linked_list_questions = set(["addTwoNumbers", "removeNthFromEnd"])
     return expected_method in linked_list_questions
+
+
+def needs_sorted_result(expected_method):
+    """Returns boolean indicating whether expected_method requires sorted results"""
+    sorted_methods = set(["threeSum", "fourSum", "twoSum", "letterCombinations"])
+    return expected_method in sorted_methods
