@@ -12,16 +12,6 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     <!-- Ace Editor -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.14/ace.js"></script>
-    <style>
-        .tag {
-            background-color: #e9ecef;
-            color: black;
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.25rem;
-            margin-right: 0.5rem;
-            font-size: 0.875rem;
-        }
-    </style>
 </head>
 <!-- Google tag (gtag.js) -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-VL5DJ1Z64V"></script>
@@ -73,8 +63,9 @@
             <!-- Left Column: Question Details + AI Helper -->
             <div class="col-md-4">
                 <!-- Question Details Section -->
-                <div class="card mb-4">
+                <div class="card mb-2">
                     <div class="card-header mt-2">
+                        {% if question %}
                         <div class="d-flex justify-content-between">
                             <div class="flex-grow-1 me-3">
                                 <h5 id="question-title" data-question-id="{{ question.questionID }}">
@@ -101,33 +92,43 @@
                                 {{ acceptance_rate }}% success rate
                             </span>
                         </div>
+                        {% else %}
+                        <h5>Question Unavailable</h5>
+                        <small>No suitable problems found.</small>
+                        {% endif %}
                     </div>
                     <div class="card-body">
+                        {% if question %}
                         <div class="mb-3">
                             {% for tag in question.tags %}
-                            <span class="tag fw-bold">{{ tag.name }}</span>
+                            <span class="tag me-1 mb-1 d-inline-block">{{ tag.name }}</span>
                             {% endfor %}
                         </div>
                         <p id="question-description" class="card-text">
                             {{ question.description }}
                         </p>
-                        {% if question.examples %}
+                        {% else %}
+                        <p id="question-description" class="card-text">
+                            Try exploring our problem library or reviewing previous solutions.
+                            If you're new, start with beginner-friendly challenges!
+                        </p>
+                        {% endif %}
+                        <!-- Example Test Cases -->
+                        {% if sample_tests %}
                         <div class="mt-3">
-                            <h6>Examples:</h6>
-                            {% for example in question.examples %}
-                            <div class="mb-2">
-                                <strong>Input:</strong> {{ example.input }}<br>
-                                <strong>Output:</strong> {{ example.output }}
-                                {% if example.explanation %}
-                                <br><strong>Explanation:</strong> {{ example.explanation }}
-                                {% endif %}
+                            {% for test in sample_tests %}
+                            <div class="mb-3">
+                                <pre class="mb-1"><strong>Example {{ loop.index }}:</strong></pre>
+                                <div class="ps-4">
+                                    <pre class="mb-1">Input: {{ test.inputData }}</pre>
+                                    <pre class="mb-1">Output: {{ test.expectedOutput }}</pre>
+                                </div>
                             </div>
                             {% endfor %}
                         </div>
                         {% endif %}
                     </div>
                 </div>
-
                 <!-- AI Helper Section -->
                 <div class="card">
                     <div class="card-header mt-2">
@@ -184,7 +185,7 @@
                                 class="btn btn-run">Run</button>
                             <button type="button" id="submit-btn" data-question-id="{{ question.questionID }}"
                                 onclick="executeCode('submit', true)" class="btn btn-submit">Submit</button>
-                            <button type="button" id="skip-btn" class="btn btn-skip" 
+                            <button type="button" id="skip-btn" class="btn btn-skip"
                                 onclick="window.location.href='/questions/{{ question.questionID + 1 }}';">Next</button>
                         </div>
                     </div>

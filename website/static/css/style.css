@@ -12,6 +12,16 @@ h1, h2, h3 {
     color: white;
 }
 
+/* Tag */
+.tag {
+    display: inline-block;
+    color: white;
+    padding: 0.25rem 0.5rem;
+    border-radius: 6px;
+    border: 1px solid #ff7a00;
+    font-size: 0.9rem;
+}
+
 /* Buttons */
 .btn {
     font-family: 'Poppins', sans-serif;

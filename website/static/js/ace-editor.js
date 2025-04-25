@@ -10,8 +10,8 @@ document.addEventListener("DOMContentLoaded", function () {
         fontSize: "14px",
         showPrintMargin: false,
         wrap: true,
-        minLines: 15,
-        maxLines: 15,
+        minLines: 20,
+        maxLines: 20,
     });
 
     const languageSelect = document.getElementById("language-select");
