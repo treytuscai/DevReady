@@ -107,13 +107,18 @@ def run_tests(code, test_cases, expected_method, language):
             # If not valid JSON, use the raw string value
             expected = test.expectedOutput
         if needs_sorted_result(expected_method):
+            output = output or []
+            expected = expected or []
+
             if output and isinstance(output[0], list):
-                output = sorted([sorted(inner) for inner in output], key=lambda x: (x[0], x[1], x[2]))
-                expected = sorted([sorted(inner) for inner in expected], key=lambda x: (x[0], x[1], x[2]))
+                output = sorted([sorted(inner) for inner in output], key=lambda x: tuple(x))
             else:
-                output = sorted(output) if output else None
-                expected = sorted(expected) if output else None
-            
+                output = sorted(output)
+
+            if expected and isinstance(expected[0], list):
+                expected = sorted([sorted(inner) for inner in expected], key=lambda x: tuple(x))
+            else:
+                expected = sorted(expected)
             
         passed = output == expected
 
