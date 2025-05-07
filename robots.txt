@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+Allow: /about
+Allow: /login
+Allow: /register
+
+# Protect private user data
+Disallow: /profile
+Disallow: /settings
+Disallow: /analytics
+
+# Sitemap location
+Sitemap: https://devready.io/sitemap.xml

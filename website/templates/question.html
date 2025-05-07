@@ -4,6 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Solve the '{{ question.title }}' coding challenge on DevReady. Test your programming skills with our interactive IDE and get AI-powered hints.">
     <title>DevReady - {{ question.title }}</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -58,6 +59,8 @@
                 <li class="breadcrumb-item active" aria-current="page">{{ question.title }}</li>
             </ol>
         </nav>
+        
+        <h1 class="visually-hidden">{{ question.title }} - Coding Challenge</h1>
 
         <div class="row g-4">
             <!-- Left Column: Question Details + AI Helper -->
