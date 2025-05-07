@@ -15,12 +15,13 @@
 
 <body>
     <!-- Navbar -->
-    <nav class="navbar navbar-dark" style="border-bottom: 1px solid orange;">
+    <nav class="navbar navbar-dark" style="border-bottom: 1px solid #FF7A00;">
         <div class="container d-flex justify-content-start align-items-center">
             <!-- Brand -->
             <a class="navbar-brand d-flex align-items-center me-3" href="/">
-                <img src="{{ url_for('static', filename='DevReadyLogo.svg') }}" alt="DevReady Logo" width="40"
-                    height="40">
+                <picture>
+                    <img src="{{ url_for('static', filename='DevReadyLogo.svg') }}" alt="DevReady Logo" 
+                        width="40" height="40">
                 <span class="ms-2 d-none d-md-inline">DevReady</span>
             </a>
             <!-- Nav Links next to the Brand -->
@@ -86,8 +87,10 @@
 
 
     <!-- Footer -->
-    <footer class="bg-light text-center py-3 mt-4 border-top">
-        <small>© 2025 DevReady. All Rights Reserved.</small>
+    <footer class="footer py-3" style="border-top: 1px solid FF7A00";>
+        <div class="container text-center">
+            <small>© 2025 DevReady. All Rights Reserved.</small>
+        </div>
     </footer>
 
     <!-- Bootstrap Bundle JS -->
